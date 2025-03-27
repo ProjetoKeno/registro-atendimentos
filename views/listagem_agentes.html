@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Agentes</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <style>
+        .container {
+            width: 90%;
+            max-width: 800px;
+            margin: 20px auto;
+            text-align: center;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            padding: 10px;
+            border: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .btn-excluir {
+            background-color: red;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .btn-excluir:hover {
+            background-color: darkred;
+        }
+
+        .btn-voltar {
+            display: inline-block;
+            margin-top: 15px;
+            padding: 10px 15px;
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+
+        .btn-voltar:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Agentes Cadastrados</h1>
+        <p>Visualize e gerencie os agentes cadastrados no sistema.</p>
+    </header>
+    
+    <main>
+        <div class="container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nome</th>
+                        <th>Email</th>
+                        <th>Ação</th>
+                    </tr>
+                </thead>
+                <tbody id="agentesTabela">
+                    <!-- Os agentes serão carregados aqui -->
+                </tbody>
+            </table>
+            <a href="/" class="btn-voltar">🏠 Voltar</a>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 - Sistema de Atendimentos</p>
+    </footer>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", async () => {
+            const tabela = document.getElementById("agentesTabela");
+            const userRole = localStorage.getItem("userRole"); // Verifica se é admin
+
+            try {
+                const resposta = await fetch("/api/agentes");
+                const agentes = await resposta.json();
+
+                if (!resposta.ok) {
+                    throw new Error(agentes.error || "Erro ao carregar agentes.");
+                }
+
+                tabela.innerHTML = agentes.map(agente => `
+                    <tr data-id="${agente.id}">
+                        <td>${agente.id}</td>
+                        <td>${agente.nome}</td>
+                        <td>${agente.email}</td>
+                        <td>
+                            ${userRole === "admin" ? 
+                                `<button class="btn-excluir" data-id="${agente.id}">Excluir</button>` 
+                                : "🔒"}
+                        </td>
+                    </tr>
+                `).join("");
+
+                document.querySelectorAll(".btn-excluir").forEach(botao => {
+                    botao.addEventListener("click", async (e) => {
+                        const id = e.target.getAttribute("data-id");
+                        excluirAgente(id);
+                    });
+                });
+
+            } catch (erro) {
+                console.error("Erro ao buscar agentes:", erro.message);
+                tabela.innerHTML = `<tr><td colspan="4">Erro ao carregar agentes.</td></tr>`;
+            }
+        });
+
+        async function excluirAgente(id) {
+            if (!confirm("Tem certeza que deseja excluir este agente?")) return;
+
+            try {
+                const resposta = await fetch(`/api/agentes/${id}`, { method: "DELETE" });
+                const resultado = await resposta.json();
+
+                if (!resposta.ok) {
+                    throw new Error(resultado.error || "Erro ao excluir agente.");
+                }
+
+                alert("Agente excluído com sucesso!");
+
+                // Remover agente da tabela sem recarregar a página
+                document.querySelector(`tr[data-id='${id}']`).remove();
+
+            } catch (erro) {
+                console.error("Erro ao excluir agente:", erro.message);
+                alert("Erro ao excluir agente.");
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Listagem de Atendimentos</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th,
+        td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f4f4f4;
+        }
+
+        .delete-btn {
+            color: white;
+            background-color: #dc3545;
+            padding: 5px 10px;
+            border: none;
+            cursor: pointer;
+        }
+
+        a {
+            color: #007bff;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+
+<body>
+    <h2>Listagem de Atendimentos</h2>
+    <table id="tabelaAtendimentos">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Cliente</th>
+                <th>Observação</th>
+                <th>Processo</th>
+                <th>Data de Solicitação</th>
+                <th>Data de Instalação</th>
+                <th>Sistema</th>
+                <th>Ticket</th>
+                <th>Agente</th>
+                <th>Backup Cloud</th> <!-- ✅ Novo campo corrigido -->
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+
+    <script>
+        // ✅ Função para carregar os atendimentos
+        async function carregarAtendimentos() {
+            try {
+                const response = await fetch('/api/atendimentos');
+                if (!response.ok) throw new Error('Erro ao carregar atendimentos.');
+
+                const atendimentos = await response.json();
+                const tabela = document.querySelector('#tabelaAtendimentos tbody');
+
+                tabela.innerHTML = '';
+
+                atendimentos.forEach(atendimento => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${atendimento.id}</td>
+                        <td>${atendimento.cliente}</td>
+                        <td>${atendimento.observacao || 'N/A'}</td>
+                        <td>${atendimento.processo || 'N/A'}</td>
+                        <td>${atendimento.data_solicitacao ? new Date(atendimento.data_solicitacao).toLocaleDateString('pt-BR') : 'N/A'}</td>
+                        <td>${atendimento.data_instalacao ? new Date(atendimento.data_instalacao).toLocaleDateString('pt-BR') : 'N/A'}</td>
+                        <td>${atendimento.sistema || 'N/A'}</td>
+                        <td>${atendimento.ticket ? `<a href="${atendimento.ticket}" target="_blank">Abrir Ticket</a>` : 'N/A'}</td>
+                        <td>${atendimento.agente || 'N/A'}</td>
+                        <td>${atendimento.backup_cloud === 'Sim' ? 'Sim' : 'Não'}</td> <!-- ✅ Ajuste correto -->
+                        <td><button class="delete-btn" onclick="excluirAtendimento(${atendimento.id})">Excluir</button></td>
+                    `;
+                    tabela.appendChild(tr);
+                });
+
+            } catch (error) {
+                console.error('❌ Erro ao listar atendimentos:', error);
+                alert('❌ Erro ao carregar atendimentos.');
+            }
+        }
+
+        // ✅ Função para excluir atendimento
+        async function excluirAtendimento(id) {
+            if (!confirm('Tem certeza que deseja excluir este atendimento?')) return;
+
+            try {
+                const response = await fetch(`/api/atendimentos/${id}`, {
+                    method: 'DELETE'
+                });
+
+                if (!response.ok) throw new Error('Erro ao excluir atendimento.');
+
+                alert('✅ Atendimento excluído com sucesso!');
+                carregarAtendimentos();
+
+            } catch (error) {
+                console.error('❌ Erro ao excluir atendimento:', error);
+                alert('❌ Erro ao excluir atendimento.');
+            }
+        }
+
+        // ✅ Carregar atendimentos ao carregar a página
+        document.addEventListener('DOMContentLoaded', carregarAtendimentos);
+    </script>
+</body>
+
+</html>

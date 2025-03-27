@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Relatórios de Atendimentos</title>
+    <style>
+        /* Estilização global */
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 20px;
+            background: #f8f9fa;
+            color: #343a40;
+            line-height: 1.6;
+        }
+
+        h2 {
+            text-align: center;
+            color: #2C3E50;
+            font-size: 2rem;
+        }
+
+        #filtroMes, #filtroBackup, button {
+            padding: 10px 15px;
+            margin: 10px 5px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        /* Tabela com visual moderno */
+        .table-container {
+            max-width: 1000px;
+            margin: 30px auto;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            background: white;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: linear-gradient(90deg, #4CAF50, #45a049);
+            color: white;
+        }
+
+        th, td {
+            padding: 15px;
+            text-align: left;
+        }
+
+        th {
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        tbody tr {
+            transition: background 0.2s ease;
+        }
+
+        tbody tr:nth-child(even) {
+            background: #f2f2f2;
+        }
+
+        tbody tr:hover {
+            background: #e8f5e9;
+            cursor: pointer;
+        }
+
+        .chart-container {
+            max-width: 600px;
+            margin: 40px auto;
+        }
+
+        /* Responsividade */
+        @media (max-width: 768px) {
+            th, td {
+                padding: 10px;
+            }
+
+            #filtroMes, #filtroBackup, button {
+                font-size: 0.9rem;
+                width: 100%;
+                margin-bottom: 10px;
+            }
+
+            .table-container {
+                border-radius: 8px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <h2>Relatórios de Atendimentos</h2>
+
+    <!-- Filtros -->
+    <label for="filtroMes">Selecione o Mês:</label>
+    <input type="month" id="filtroMes">
+
+    <label for="filtroBackup">Backup Cloud:</label>
+    <select id="filtroBackup">
+        <option value="">Todos</option>
+        <option value="Sim">Com Backup Cloud</option>
+        <option value="Não">Sem Backup Cloud</option>
+    </select>
+
+    <button onclick="carregarRelatorio()">Filtrar</button>
+
+    <!-- Tabela de Relatórios -->
+    <div class="table-container">
+        <h3 style="text-align: center; color: #2C3E50;">Resumo por Processo</h3>
+        <table id="tabelaRelatorio">
+            <thead>
+                <tr>
+                    <th>Processo</th>
+                    <th>Quantidade</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+
+    <!-- Gráfico de Pizza -->
+    <div class="chart-container">
+        <canvas id="graficoPizza"></canvas>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        async function carregarRelatorio() {
+            try {
+                const mesSelecionado = document.getElementById('filtroMes').value || new Date().toISOString().slice(0, 7);
+                const [ano, mes] = mesSelecionado.split('-');
+                const backupCloud = document.getElementById('filtroBackup').value;
+
+                // Monta a URL com os filtros aplicados
+                const url = `/api/relatorios?mes=${mes}&ano=${ano}${backupCloud ? `&backup_cloud=${backupCloud}` : ''}`;
+
+                const response = await fetch(url);
+                if (!response.ok) throw new Error('Erro ao carregar relatório.');
+
+                const dados = await response.json();
+                atualizarTabela(dados);
+                atualizarGrafico(dados);
+            } catch (error) {
+                console.error('❌ Erro ao carregar relatório:', error);
+                alert('❌ Erro ao carregar relatório.');
+            }
+        }
+
+        function atualizarTabela(dados) {
+            const tabela = document.querySelector('#tabelaRelatorio tbody');
+            tabela.innerHTML = '';
+
+            if (dados.length === 0) {
+                tabela.innerHTML = '<tr><td colspan="2" style="text-align: center;">Nenhum registro encontrado.</td></tr>';
+                return;
+            }
+
+            dados.forEach(({ processo, total }) => {
+                const linha = `<tr><td>${processo}</td><td>${total}</td></tr>`;
+                tabela.innerHTML += linha;
+            });
+        }
+
+        let grafico;
+        function atualizarGrafico(dados) {
+            const ctx = document.getElementById('graficoPizza').getContext('2d');
+
+            if (grafico) grafico.destroy();
+
+            const labels = dados.map(item => item.processo);
+            const valores = dados.map(item => item.total);
+
+            grafico = new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: valores,
+                        backgroundColor: ['#4CAF50', '#FF5733', '#36A2EB', '#FFCE56', '#9C27B0'],
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { position: 'bottom' }
+                    }
+                }
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', carregarRelatorio);
+    </script>
+
+</body>
+
+</html>

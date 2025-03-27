@@ -1,0 +1,44 @@
+<!-- Tela de Cadastro de Atendimento -->
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro de Atendimento</title>
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+    <h1>Cadastro de Atendimento</h1>
+    <form id="cadastroForm">
+        <label for="cliente">Cliente:</label>
+        <input type="text" id="cliente" name="cliente" required>
+        
+        <label for="descricao">Descrição:</label>
+        <textarea id="descricao" name="descricao" required></textarea>
+        
+        <button type="submit">Cadastrar</button>
+    </form>
+    <script>
+        document.getElementById('cadastroForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
+            
+            const cliente = document.getElementById('cliente').value;
+            const descricao = document.getElementById('descricao').value;
+            const data_solicitacao = new Date().toISOString().slice(0, 19).replace('T', ' ');
+            
+            const response = await fetch('/api/atendimentos', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ cliente, descricao, data_solicitacao })
+            });
+            
+            if (response.ok) {
+                alert('Atendimento cadastrado com sucesso!');
+                window.location.href = 'listagem.html';
+            } else {
+                alert('Erro ao cadastrar atendimento!');
+            }
+        });
+    </script>
+</body>
+</html>
