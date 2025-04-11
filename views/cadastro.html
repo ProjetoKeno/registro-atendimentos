@@ -1,170 +1,295 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
-
+<html lang="pt-BR" data-theme="light">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cadastro de Atendimento</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Cadastro de Atendimento</title>
+  <link rel="icon" type="image/x-icon" href="/img/favicon.ico" />
+  <style>
+    :root {
+      --bg-color: #f4f6f8;
+      --form-bg: #fff;
+      --text-color: #333;
+      --input-border: #ccc;
+      --label-color: #2c3e50;
+      --btn-bg: #28a745;
+      --btn-hover: #218838;
+      --link-bg: #007bff;
+      --link-hover: #0056b3;
+    }
 
-        form {
-            max-width: 400px;
-        }
+    [data-theme="dark"] {
+      --bg-color: #1e1e1e;
+      --form-bg: #2c2c2c;
+      --text-color: #eee;
+      --input-border: #555;
+      --label-color: #ddd;
+      --btn-bg: #2ecc71;
+      --btn-hover: #27ae60;
+      --link-bg: #2980b9;
+      --link-hover: #1f618d;
+    }
 
-        label,
-        input,
-        select,
-        textarea {
-            display: block;
-            width: 100%;
-            margin-bottom: 10px;
-        }
+    * {
+      box-sizing: border-box;
+    }
 
-        button {
-            padding: 10px;
-            background: #28a745;
-            color: white;
-            border: none;
-            cursor: pointer;
-        }
-    </style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    .theme-toggle {
+  position: fixed;
+  top: 15px;
+  right: 15px;
+  background-color: var(--link-bg);
+  color: white;
+  border: none;
+  padding: 6px 10px;
+  border-radius: 50px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  z-index: 999;
+  white-space: nowrap;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  transition: background-color 0.3s ease;
+  display: inline-block;
+  width: auto;
+  max-width: 150px;
+}
+
+
+    .theme-toggle:hover {
+      background-color: var(--link-hover);
+    }
+
+    .nav-buttons {
+      text-align: center;
+      margin: 30px 0 10px;
+    }
+
+    .nav-buttons a {
+      display: inline-block;
+      margin: 0 8px;
+      padding: 10px 16px;
+      background-color: var(--link-bg);
+      color: white;
+      text-decoration: none;
+      border-radius: 6px;
+      transition: background 0.3s ease;
+    }
+
+    .nav-buttons a:hover {
+      background-color: var(--link-hover);
+    }
+
+    .container {
+      max-width: 600px;
+      margin: 20px auto 40px;
+      background: var(--form-bg);
+      padding: 30px 40px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    h2 {
+      text-align: center;
+      color: var(--label-color);
+      margin-bottom: 25px;
+    }
+
+    label {
+      margin-bottom: 6px;
+      display: block;
+      color: var(--label-color);
+      font-weight: 500;
+    }
+
+    input,
+    select,
+    textarea {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 16px;
+      border: 1px solid var(--input-border);
+      border-radius: 6px;
+      font-size: 1rem;
+      background-color: inherit;
+      color: inherit;
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      background-color: var(--btn-bg);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    button:hover {
+      background-color: var(--btn-hover);
+    }
+  </style>
 </head>
 
 <body>
+  <button class="theme-toggle" onclick="toggleTheme()">🌙 Tema Escuro</button>
+
+  <div class="nav-buttons">
+    <a href="/homepage">🏠 Voltar</a>
+    <a href="/views/listagem.html">📋 Ver Listagem</a>
+  </div>
+
+  <div class="container">
     <h2>Cadastro de Atendimento</h2>
     <form id="formAtendimento">
-        <label for="cliente">Cliente:</label>
-        <input type="text" id="cliente" required>
+      <label for="cliente">Cliente:</label>
+      <input type="text" id="cliente" required />
 
-        <label for="data_solicitacao">Data Solicitação:</label>
-        <input type="date" id="data_solicitacao" required>
+      <label for="data_solicitacao">Data de Solicitação:</label>
+      <input type="date" id="data_solicitacao" required />
 
-        <label for="data_instalacao">Data Instalação:</label>
-        <input type="date" id="data_instalacao">
+      <label for="data_instalacao">Data de Instalação:</label>
+      <input type="date" id="data_instalacao" />
 
-        <label for="processo_id">Processo:</label>
-        <select id="processo_id" required>
-            <option value="">Selecione um processo</option>
-        </select>
+      <label for="processo_id">Processo:</label>
+      <select id="processo_id" required>
+        <option value="">Selecione um processo</option>
+      </select>
 
-        <label for="sistema">Sistema:</label>
-        <input type="text" id="sistema">
+      <label for="sistema">Sistema:</label>
+      <input type="text" id="sistema" />
 
-        <label for="ticket">Ticket:</label>
-        <input type="text" id="ticket">
+      <label for="ticket">Ticket:</label>
+      <input type="text" id="ticket" />
 
-        <label for="agente_id">Agente Responsável:</label>
-        <select id="agente_id" required>
-            <option value="">Selecione um agente</option>
-        </select>
+      <label for="agente_id">Agente Responsável:</label>
+      <select id="agente_id" required>
+        <option value="">Selecione um agente</option>
+      </select>
 
-        <label for="observacao">Observação:</label>
-        <textarea id="observacao"></textarea>
+      <label for="observacao">Observação:</label>
+      <textarea id="observacao"></textarea>
 
-        <!-- Campo Backup Cloud -->
-        <label for="backupCloud">Backup Cloud:</label>
-        <select id="backupCloud" name="backup_cloud" required>
-            <option value="Sim">Sim</option>
-            <option value="Não" selected>Não</option>
-        </select>
+      <label for="backupCloud">Backup Cloud:</label>
+      <select id="backupCloud" required>
+        <option value="Sim">Sim</option>
+        <option value="Não" selected>Não</option>
+      </select>
 
-        <button type="submit">Cadastrar Atendimento</button>
+      <button type="submit">Cadastrar Atendimento</button>
     </form>
+  </div>
 
-    <script>
-        // Função para carregar agentes
-        async function carregarAgentes() {
-            try {
-                const response = await fetch('/api/agentes');
-                if (!response.ok) throw new Error('Erro ao carregar agentes.');
+  <script>
+    function setTheme(theme) {
+      document.documentElement.setAttribute('data-theme', theme);
+      localStorage.setItem('temaPreferido', theme);
+      document.querySelector('.theme-toggle').textContent = theme === 'dark' ? '🌞' : '🌙';
+    }
 
-                const agentes = await response.json();
-                const selectAgente = document.getElementById('agente_id');
+    function toggleTheme() {
+      const atual = document.documentElement.getAttribute('data-theme') || 'light';
+      const novo = atual === 'dark' ? 'light' : 'dark';
+      setTheme(novo);
+    }
 
-                agentes.forEach(agente => {
-                    const option = document.createElement('option');
-                    option.value = agente.id;
-                    option.textContent = agente.nome;
-                    selectAgente.appendChild(option);
-                });
-            } catch (error) {
-                console.error('Erro ao carregar agentes:', error);
-            }
-        }
+    async function carregarAgentes() {
+      try {
+        const response = await fetch('/api/agentes');
+        if (!response.ok) throw new Error('Erro ao carregar agentes.');
+        const agentes = await response.json();
+        const select = document.getElementById('agente_id');
+        agentes.forEach(agente => {
+          const option = document.createElement('option');
+          option.value = agente.id;
+          option.textContent = agente.nome;
+          select.appendChild(option);
+        });
+      } catch (err) {
+        console.error(err);
+      }
+    }
 
-        // Função para carregar processos
-        async function carregarProcessos() {
-            try {
-                const response = await fetch('/api/processos');
-                if (!response.ok) throw new Error('Erro ao carregar processos.');
+    async function carregarProcessos() {
+      try {
+        const response = await fetch('/api/processos');
+        if (!response.ok) throw new Error('Erro ao carregar processos.');
+        const processos = await response.json();
+        const select = document.getElementById('processo_id');
+        processos.forEach(processo => {
+          const option = document.createElement('option');
+          option.value = processo.id;
+          option.textContent = processo.nome;
+          select.appendChild(option);
+        });
+      } catch (err) {
+        console.error(err);
+      }
+    }
 
-                const processos = await response.json();
-                const selectProcesso = document.getElementById('processo_id');
+    document.addEventListener('DOMContentLoaded', () => {
+      const tema = localStorage.getItem('temaPreferido') || 'light';
+      setTheme(tema);
+      carregarAgentes();
+      carregarProcessos();
+    });
 
-                processos.forEach(processo => {
-                    const option = document.createElement('option');
-                    option.value = processo.id;
-                    option.textContent = processo.nome;
-                    selectProcesso.appendChild(option);
-                });
-            } catch (error) {
-                console.error('Erro ao carregar processos:', error);
-            }
-        }
+    document.getElementById('formAtendimento').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const atendimento = {
+        cliente: document.getElementById('cliente').value.trim(),
+        data_solicitacao: document.getElementById('data_solicitacao').value || null,
+        data_instalacao: document.getElementById('data_instalacao').value || null,
+        processo_id: document.getElementById('processo_id').value || null,
+        sistema: document.getElementById('sistema').value.trim() || null,
+        ticket: document.getElementById('ticket').value.trim() || null,
+        agente_id: document.getElementById('agente_id').value || null,
+        observacao: document.getElementById('observacao').value.trim() || null,
+        backup_cloud: document.getElementById('backupCloud').value || 'Não'
+      };
 
-        // Carregar agentes e processos ao carregar a página
-        document.addEventListener('DOMContentLoaded', () => {
-            carregarAgentes();
-            carregarProcessos();
+      if (!atendimento.cliente || !atendimento.data_solicitacao || !atendimento.agente_id || !atendimento.processo_id) {
+        alert('❌ Cliente, Data de Solicitação, Processo e Agente Responsável são obrigatórios!');
+        return;
+      }
+
+      try {
+        const res = await fetch('/api/atendimentos', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(atendimento)
         });
 
-        // Função para enviar os dados do formulário
-        document.getElementById('formAtendimento').addEventListener('submit', async function (event) {
-            event.preventDefault();
+        const result = await res.json();
 
-            const atendimento = {
-                cliente: document.getElementById('cliente').value.trim(),
-                data_solicitacao: document.getElementById('data_solicitacao').value || null,
-                data_instalacao: document.getElementById('data_instalacao').value || null,
-                processo_id: document.getElementById('processo_id').value || null,
-                sistema: document.getElementById('sistema').value.trim() || null,
-                ticket: document.getElementById('ticket').value.trim() || null,
-                agente_id: document.getElementById('agente_id').value || null,
-                observacao: document.getElementById('observacao').value.trim() || null,
-                backup_cloud: document.getElementById('backupCloud').value || 'Não'
-            };
-
-            // Validação de campos obrigatórios
-            if (!atendimento.cliente || !atendimento.data_solicitacao || !atendimento.agente_id || !atendimento.processo_id) {
-                alert('❌ Cliente, Data de Solicitação, Processo e Agente Responsável são obrigatórios!');
-                return;
-            }
-
-            try {
-                const response = await fetch('/api/atendimentos', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(atendimento)
-                });
-
-                const result = await response.json();
-
-                if (response.ok) {
-                    alert('✅ Atendimento cadastrado com sucesso!');
-                    window.location.href = '/views/listagem.html';
-                } else {
-                    alert('❌ Erro ao cadastrar: ' + (result.error || 'Erro desconhecido.'));
-                }
-            } catch (error) {
-                console.error('Erro na requisição:', error);
-                alert('❌ Erro ao conectar ao servidor.');
-            }
-        });
-    </script>
+        if (res.ok) {
+          alert('✅ Atendimento cadastrado com sucesso!');
+          window.location.href = '/views/listagem.html';
+        } else {
+          alert('❌ Erro ao cadastrar: ' + (result.error || 'Erro desconhecido.'));
+        }
+      } catch (err) {
+        console.error('Erro na requisição:', err);
+        alert('❌ Erro ao conectar ao servidor.');
+      }
+    });
+  </script>
 </body>
-
 </html>

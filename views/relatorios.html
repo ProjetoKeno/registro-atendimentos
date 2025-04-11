@@ -1,215 +1,357 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
-
+<html lang="pt-BR" data-theme="light">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Relatórios de Atendimentos</title>
-    <style>
-        /* Estilização global */
-        body {
-            font-family: 'Arial', sans-serif;
-            margin: 20px;
-            background: #f8f9fa;
-            color: #343a40;
-            line-height: 1.6;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Relatórios de Atendimentos</title>
+  <link rel="icon" type="image/x-icon" href="/img/favicon.ico" />
+  <style>
+    :root {
+      --bg-color: #f8f9fa;
+      --text-color: #343a40;
+      --card-bg: #fff;
+      --header-color: #2C3E50;
+      --border-color: #ccc;
+      --hover-color: #f1f1f1;
+      --thead-bg: linear-gradient(90deg, #4CAF50, #45a049);
+      --primary: #4CAF50;
+      --primary-hover: #45a049;
+      --blue: #007bff;
+      --blue-hover: #0056b3;
+    }
 
-        h2 {
-            text-align: center;
-            color: #2C3E50;
-            font-size: 2rem;
-        }
+    [data-theme="dark"] {
+      --bg-color: #1e1e1e;
+      --text-color: #e0e0e0;
+      --card-bg: #2c2c2c;
+      --header-color: #f5f5f5;
+      --border-color: #444;
+      --hover-color: #2a2a2a;
+      --thead-bg: linear-gradient(90deg, #2ecc71, #27ae60);
+      --primary: #2ecc71;
+      --primary-hover: #27ae60;
+      --blue: #3498db;
+      --blue-hover: #2980b9;
+    }
 
-        #filtroMes, #filtroBackup, button {
-            padding: 10px 15px;
-            margin: 10px 5px;
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            font-size: 1rem;
-        }
+    body {
+      font-family: 'Arial', sans-serif;
+      margin: 20px;
+      background: var(--bg-color);
+      color: var(--text-color);
+      transition: background 0.3s, color 0.3s;
+    }
 
-        button {
-            background-color: #4CAF50;
-            color: white;
-            cursor: pointer;
-            transition: background 0.3s ease;
-        }
+    h2 {
+      text-align: center;
+      color: var(--header-color);
+    }
 
-        button:hover {
-            background-color: #45a049;
-        }
+    .theme-toggle {
+      position: fixed;
+      top: 15px;
+      right: 15px;
+      background-color: var(--blue);
+      color: white;
+      border: none;
+      padding: 6px 10px;
+      border-radius: 50px;
+      font-size: 0.9rem;
+      cursor: pointer;
+      z-index: 999;
+      white-space: nowrap;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+      transition: background-color 0.3s ease;
+    }
 
-        /* Tabela com visual moderno */
-        .table-container {
-            max-width: 1000px;
-            margin: 30px auto;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            background: white;
-        }
+    .theme-toggle:hover {
+      background-color: var(--blue-hover);
+    }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
+    .filtros {
+      text-align: center;
+      margin: 20px 0;
+    }
 
-        thead {
-            background: linear-gradient(90deg, #4CAF50, #45a049);
-            color: white;
-        }
+    .filtros select, .filtros input, .filtros button {
+      margin: 0 10px;
+      padding: 8px 12px;
+      border-radius: 6px;
+      border: 1px solid var(--border-color);
+      background-color: var(--card-bg);
+      color: var(--text-color);
+    }
 
-        th, td {
-            padding: 15px;
-            text-align: left;
-        }
+    button {
+      background-color: var(--primary);
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
 
-        th {
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
+    button:hover {
+      background-color: var(--primary-hover);
+    }
 
-        tbody tr {
-            transition: background 0.2s ease;
-        }
+    .table-container {
+      max-width: 1000px;
+      margin: 20px auto;
+      background: var(--card-bg);
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+    }
 
-        tbody tr:nth-child(even) {
-            background: #f2f2f2;
-        }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
 
-        tbody tr:hover {
-            background: #e8f5e9;
-            cursor: pointer;
-        }
+    th, td {
+      padding: 12px 15px;
+      border-bottom: 1px solid var(--border-color);
+      text-align: left;
+    }
 
-        .chart-container {
-            max-width: 600px;
-            margin: 40px auto;
-        }
+    thead {
+      background: var(--thead-bg);
+      color: white;
+    }
 
-        /* Responsividade */
-        @media (max-width: 768px) {
-            th, td {
-                padding: 10px;
-            }
+    tbody tr:hover {
+      background-color: var(--hover-color);
+    }
 
-            #filtroMes, #filtroBackup, button {
-                font-size: 0.9rem;
-                width: 100%;
-                margin-bottom: 10px;
-            }
+    .chart-container {
+      max-width: 600px;
+      margin: 30px auto;
+    }
 
-            .table-container {
-                border-radius: 8px;
-            }
-        }
-    </style>
+    .mini-tabela {
+      max-width: 600px;
+      margin: 30px auto;
+      background: var(--card-bg);
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
+    }
+
+    .mini-tabela th {
+      background: var(--blue);
+      color: white;
+    }
+
+    .btn-voltar {
+      display: inline-block;
+      margin: 20px;
+      padding: 10px 16px;
+      background: var(--blue);
+      color: white;
+      text-decoration: none;
+      border-radius: 5px;
+    }
+
+    .btn-voltar:hover {
+      background: var(--blue-hover);
+    }
+
+    #btnDetalhes {
+      display: block;
+      margin: 0 auto 20px;
+    }
+
+    #tabelaRelatorio {
+      display: none;
+    }
+  </style>
 </head>
-
 <body>
-    <h2>Relatórios de Atendimentos</h2>
+  <button class="theme-toggle" onclick="toggleTheme()">🌙 Tema Escuro</button>
 
-    <!-- Filtros -->
-    <label for="filtroMes">Selecione o Mês:</label>
-    <input type="month" id="filtroMes">
+  <h2>Relatórios de Atendimentos</h2>
+
+  <div class="filtros">
+    <label for="filtroMes">Mês:</label>
+    <input type="month" id="filtroMes" />
 
     <label for="filtroBackup">Backup Cloud:</label>
     <select id="filtroBackup">
-        <option value="">Todos</option>
-        <option value="Sim">Com Backup Cloud</option>
-        <option value="Não">Sem Backup Cloud</option>
+      <option value="">Todos</option>
+      <option value="Sim">Com Backup Cloud</option>
+      <option value="Não">Sem Backup Cloud</option>
+    </select>
+
+    <label for="tipoGrafico">Tipo de Gráfico:</label>
+    <select id="tipoGrafico">
+      <option value="pie">Pizza</option>
+      <option value="bar">Barra</option>
+      <option value="doughnut">Doughnut</option>
     </select>
 
     <button onclick="carregarRelatorio()">Filtrar</button>
+  </div>
 
-    <!-- Tabela de Relatórios -->
-    <div class="table-container">
-        <h3 style="text-align: center; color: #2C3E50;">Resumo por Processo</h3>
-        <table id="tabelaRelatorio">
-            <thead>
-                <tr>
-                    <th>Processo</th>
-                    <th>Quantidade</th>
-                </tr>
-            </thead>
-            <tbody></tbody>
-        </table>
-    </div>
+  <div class="mini-tabela">
+    <table id="tabelaAgentes">
+      <thead>
+        <tr>
+          <th>Agente</th>
+          <th>Total de Atendimentos</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
 
-    <!-- Gráfico de Pizza -->
-    <div class="chart-container">
-        <canvas id="graficoPizza"></canvas>
-    </div>
+  <div class="chart-container">
+    <canvas id="graficoAtendimentos"></canvas>
+  </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script>
-        async function carregarRelatorio() {
-            try {
-                const mesSelecionado = document.getElementById('filtroMes').value || new Date().toISOString().slice(0, 7);
-                const [ano, mes] = mesSelecionado.split('-');
-                const backupCloud = document.getElementById('filtroBackup').value;
+  <button id="btnDetalhes" onclick="toggleDetalhes()">Ver Detalhes</button>
 
-                // Monta a URL com os filtros aplicados
-                const url = `/api/relatorios?mes=${mes}&ano=${ano}${backupCloud ? `&backup_cloud=${backupCloud}` : ''}`;
+  <div class="table-container" id="tabelaRelatorio">
+    <table>
+      <thead>
+        <tr>
+          <th>Processo</th>
+          <th>Quantidade</th>
+        </tr>
+      </thead>
+      <tbody id="tabelaProcessos"></tbody>
+    </table>
+  </div>
 
-                const response = await fetch(url);
-                if (!response.ok) throw new Error('Erro ao carregar relatório.');
+  <a href="/homepage" class="btn-voltar">⬅ Voltar</a>
 
-                const dados = await response.json();
-                atualizarTabela(dados);
-                atualizarGrafico(dados);
-            } catch (error) {
-                console.error('❌ Erro ao carregar relatório:', error);
-                alert('❌ Erro ao carregar relatório.');
-            }
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    let grafico;
+    let dadosOriginais = [];
+
+    function setTheme(theme) {
+      document.documentElement.setAttribute('data-theme', theme);
+      localStorage.setItem('temaPreferido', theme);
+      document.querySelector('.theme-toggle').textContent = theme === 'dark' ? '🌞' : '🌙';
+    }
+
+    function toggleTheme() {
+      const atual = document.documentElement.getAttribute('data-theme') || 'light';
+      const novo = atual === 'dark' ? 'light' : 'dark';
+      setTheme(novo);
+    }
+
+    function toggleDetalhes() {
+      const tabela = document.getElementById('tabelaRelatorio');
+      const btn = document.getElementById('btnDetalhes');
+      tabela.style.display = tabela.style.display === 'none' ? 'block' : 'none';
+      btn.textContent = tabela.style.display === 'block' ? 'Ocultar Detalhes' : 'Ver Detalhes';
+    }
+
+    async function carregarRelatorio() {
+      const mesSelecionado = document.getElementById('filtroMes').value || new Date().toISOString().slice(0, 7);
+      const [ano, mes] = mesSelecionado.split('-');
+      const backupCloud = document.getElementById('filtroBackup').value;
+
+      const url = `/api/relatorios?mes=${mes}&ano=${ano}${backupCloud ? `&backup_cloud=${backupCloud}` : ''}`;
+
+      try {
+        const response = await fetch(url);
+        if (!response.ok) throw new Error();
+
+        const dados = await response.json();
+        dadosOriginais = dados;
+
+        atualizarGrafico(dados);
+        atualizarTabela(dados);
+        carregarTotaisAgentes(mes, ano, backupCloud);
+      } catch (e) {
+        alert('❌ Erro ao carregar relatório.');
+      }
+    }
+
+    function atualizarTabela(dados) {
+      const tabela = document.getElementById('tabelaProcessos');
+      tabela.innerHTML = '';
+
+      if (dados.length === 0) {
+        tabela.innerHTML = `<tr><td colspan="2" style="text-align: center;">Nenhum registro encontrado.</td></tr>`;
+        return;
+      }
+
+      dados.forEach(({ processo, total }) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td>${processo}</td><td>${total}</td>`;
+        tabela.appendChild(tr);
+      });
+    }
+
+    function atualizarGrafico(dados) {
+      const ctx = document.getElementById('graficoAtendimentos').getContext('2d');
+      const tipoSelecionado = document.getElementById('tipoGrafico').value;
+
+      if (grafico) grafico.destroy();
+
+      const top5 = dados.slice(0, 5);
+      const outros = dados.slice(5);
+      const totalOutros = outros.reduce((sum, item) => sum + item.total, 0);
+
+      const labels = top5.map(p => p.processo);
+      const valores = top5.map(p => p.total);
+
+      if (totalOutros > 0) {
+        labels.push('Outros');
+        valores.push(totalOutros);
+      }
+
+      grafico = new Chart(ctx, {
+        type: tipoSelecionado,
+        data: {
+          labels,
+          datasets: [{
+            label: 'Atendimentos',
+            data: valores,
+            backgroundColor: ['#4CAF50', '#FF5733', '#36A2EB', '#FFCE56', '#9C27B0', '#B0BEC5'],
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: { position: 'bottom' }
+          }
         }
+      });
+    }
 
-        function atualizarTabela(dados) {
-            const tabela = document.querySelector('#tabelaRelatorio tbody');
-            tabela.innerHTML = '';
+    async function carregarTotaisAgentes(mes, ano, backupCloud) {
+      try {
+        let url = `/api/relatorios/agentes?mes=${mes}&ano=${ano}`;
+        if (backupCloud) url += `&backup_cloud=${backupCloud}`;
 
-            if (dados.length === 0) {
-                tabela.innerHTML = '<tr><td colspan="2" style="text-align: center;">Nenhum registro encontrado.</td></tr>';
-                return;
-            }
+        const res = await fetch(url);
+        if (!res.ok) throw new Error();
 
-            dados.forEach(({ processo, total }) => {
-                const linha = `<tr><td>${processo}</td><td>${total}</td></tr>`;
-                tabela.innerHTML += linha;
-            });
-        }
+        const dados = await res.json();
+        const tabela = document.querySelector('#tabelaAgentes tbody');
+        tabela.innerHTML = '';
 
-        let grafico;
-        function atualizarGrafico(dados) {
-            const ctx = document.getElementById('graficoPizza').getContext('2d');
+        dados.forEach(({ agente, total }) => {
+          tabela.innerHTML += `<tr><td>${agente}</td><td>${total}</td></tr>`;
+        });
+      } catch (e) {
+        console.error('Erro ao carregar total de agentes');
+      }
+    }
 
-            if (grafico) grafico.destroy();
+    document.addEventListener('DOMContentLoaded', () => {
+      const tema = localStorage.getItem('temaPreferido') || 'light';
+      setTheme(tema);
+      carregarRelatorio();
+      document.getElementById('tabelaRelatorio').style.display = 'none';
 
-            const labels = dados.map(item => item.processo);
-            const valores = dados.map(item => item.total);
-
-            grafico = new Chart(ctx, {
-                type: 'pie',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        data: valores,
-                        backgroundColor: ['#4CAF50', '#FF5733', '#36A2EB', '#FFCE56', '#9C27B0'],
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        legend: { position: 'bottom' }
-                    }
-                }
-            });
-        }
-
-        document.addEventListener('DOMContentLoaded', carregarRelatorio);
-    </script>
-
+      document.getElementById('tipoGrafico').addEventListener('change', () => {
+        atualizarGrafico(dadosOriginais);
+      });
+    });
+  </script>
 </body>
-
 </html>

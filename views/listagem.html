@@ -1,132 +1,323 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
-
+<html lang="pt-BR" data-theme="light">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Listagem de Atendimentos</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Listagem de Atendimentos</title>
+  <link rel="icon" type="image/x-icon" href="/img/favicon.ico" />
+  <style>
+    :root {
+      --bg-color: #f5f5f5;
+      --text-color: #333;
+      --table-bg: #fff;
+      --header-bg: #f4f4f4;
+      --hover-bg: #e8f5e9;
+      --primary: #007bff;
+      --success: #4CAF50;
+      --danger: #dc3545;
+      --danger-hover: #bb2d3b;
+    }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
+    [data-theme="dark"] {
+      --bg-color: #1e1e1e;
+      --text-color: #eee;
+      --table-bg: #2c2c2c;
+      --header-bg: #3a3a3a;
+      --hover-bg: #2e4732;
+    }
 
-        th,
-        td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: left;
-        }
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+    }
 
-        th {
-            background-color: #f4f4f4;
-        }
+    .container-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
 
-        .delete-btn {
-            color: white;
-            background-color: #dc3545;
-            padding: 5px 10px;
-            border: none;
-            cursor: pointer;
-        }
+    h2 {
+      margin: 0 auto;
+      text-align: center;
+    }
 
-        a {
-            color: #007bff;
-            text-decoration: none;
-        }
+    .voltar {
+      background-color: var(--primary);
+      color: white;
+      padding: 6px 12px;
+      border-radius: 6px;
+      text-decoration: none;
+      font-size: 0.9rem;
+    }
 
-        a:hover {
-            text-decoration: underline;
-        }
-    </style>
+    .voltar:hover {
+      background-color: #0056b3;
+    }
+
+    .filtros {
+      margin: 20px 0;
+      text-align: center;
+    }
+
+    .filtros label,
+    .filtros select {
+      margin: 0 8px;
+    }
+
+    .btn-acao {
+      padding: 8px 14px;
+      margin: 5px;
+      border: none;
+      border-radius: 5px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .btn-filtrar {
+      background-color: var(--success);
+      color: white;
+    }
+
+    .btn-filtrar:hover {
+      background-color: #45a049;
+    }
+
+    .btn-novo {
+      background-color: var(--primary);
+      color: white;
+    }
+
+    .btn-novo:hover {
+      background-color: #0056b3;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background-color: var(--table-bg);
+      box-shadow: 0 0 6px rgba(0, 0, 0, 0.05);
+      border-radius: 6px;
+      overflow: hidden;
+    }
+
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px 10px;
+      text-align: left;
+      font-size: 0.9rem;
+    }
+
+    th {
+      background-color: var(--header-bg);
+    }
+
+    tbody tr:hover {
+      background-color: var(--hover-bg);
+      transition: background-color 0.2s ease;
+    }
+
+    td {
+      max-width: 160px;
+      word-wrap: break-word;
+    }
+
+    .delete-btn {
+      background-color: var(--danger);
+      color: white;
+      padding: 5px 10px;
+      border: none;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+
+    .delete-btn:hover {
+      background-color: var(--danger-hover);
+    }
+
+    a {
+      color: var(--primary);
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    .theme-toggle {
+      position: fixed;
+      top: 15px;
+      right: 15px;
+      background-color: var(--link-bg, #007bff);
+      color: white;
+      border: none;
+      padding: 6px 10px;
+      border-radius: 50px;
+      font-size: 0.9rem;
+      cursor: pointer;
+      z-index: 999;
+      white-space: nowrap;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+      transition: background-color 0.3s ease;
+      width: auto;
+      max-width: 150px;
+    }
+
+    .theme-toggle:hover {
+      background-color: #0056b3;
+    }
+  </style>
 </head>
 
 <body>
+  <button class="theme-toggle" onclick="toggleTheme()">🌙 Tema Escuro</button>
+
+  <div class="container-top">
+    <a href="/homepage" class="voltar">⬅ Voltar</a>
     <h2>Listagem de Atendimentos</h2>
-    <table id="tabelaAtendimentos">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Cliente</th>
-                <th>Observação</th>
-                <th>Processo</th>
-                <th>Data de Solicitação</th>
-                <th>Data de Instalação</th>
-                <th>Sistema</th>
-                <th>Ticket</th>
-                <th>Agente</th>
-                <th>Backup Cloud</th> <!-- ✅ Novo campo corrigido -->
-                <th>Ações</th>
-            </tr>
-        </thead>
-        <tbody></tbody>
-    </table>
+    <div style="width: 80px;"></div> <!-- espaço alinhado ao botão -->
+  </div>
 
-    <script>
-        // ✅ Função para carregar os atendimentos
-        async function carregarAtendimentos() {
-            try {
-                const response = await fetch('/api/atendimentos');
-                if (!response.ok) throw new Error('Erro ao carregar atendimentos.');
+  <div class="filtros">
+    <label for="filtroMes">Mês:</label>
+    <select id="filtroMes">
+      <option value="">Todos</option>
+    </select>
 
-                const atendimentos = await response.json();
-                const tabela = document.querySelector('#tabelaAtendimentos tbody');
+    <label for="filtroAgente">Agente:</label>
+    <select id="filtroAgente">
+      <option value="">Todos</option>
+    </select>
 
-                tabela.innerHTML = '';
+    <button class="btn-acao btn-filtrar" onclick="carregarAtendimentos()">Filtrar</button>
+    <button class="btn-acao btn-novo" onclick="window.location.href='/views/cadastro.html'">➕ Novo Atendimento</button>
+  </div>
 
-                atendimentos.forEach(atendimento => {
-                    const tr = document.createElement('tr');
-                    tr.innerHTML = `
-                        <td>${atendimento.id}</td>
-                        <td>${atendimento.cliente}</td>
-                        <td>${atendimento.observacao || 'N/A'}</td>
-                        <td>${atendimento.processo || 'N/A'}</td>
-                        <td>${atendimento.data_solicitacao ? new Date(atendimento.data_solicitacao).toLocaleDateString('pt-BR') : 'N/A'}</td>
-                        <td>${atendimento.data_instalacao ? new Date(atendimento.data_instalacao).toLocaleDateString('pt-BR') : 'N/A'}</td>
-                        <td>${atendimento.sistema || 'N/A'}</td>
-                        <td>${atendimento.ticket ? `<a href="${atendimento.ticket}" target="_blank">Abrir Ticket</a>` : 'N/A'}</td>
-                        <td>${atendimento.agente || 'N/A'}</td>
-                        <td>${atendimento.backup_cloud === 'Sim' ? 'Sim' : 'Não'}</td> <!-- ✅ Ajuste correto -->
-                        <td><button class="delete-btn" onclick="excluirAtendimento(${atendimento.id})">Excluir</button></td>
-                    `;
-                    tabela.appendChild(tr);
-                });
+  <table id="tabelaAtendimentos">
+    <thead>
+      <tr>
+        <th>Cliente</th>
+        <th>Observação</th>
+        <th>Processo</th>
+        <th>Data Solicitação</th>
+        <th>Data Instalação</th>
+        <th>Sistema</th>
+        <th>Ticket</th>
+        <th>Agente</th>
+        <th>Backup Cloud</th>
+        <th>Ações</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
 
-            } catch (error) {
-                console.error('❌ Erro ao listar atendimentos:', error);
-                alert('❌ Erro ao carregar atendimentos.');
-            }
-        }
+  <script>
+    async function carregarAtendimentos() {
+      const mes = document.getElementById('filtroMes').value;
+      const agente = document.getElementById('filtroAgente').value;
 
-        // ✅ Função para excluir atendimento
-        async function excluirAtendimento(id) {
-            if (!confirm('Tem certeza que deseja excluir este atendimento?')) return;
+      let url = '/api/atendimentos';
+      const params = [];
 
-            try {
-                const response = await fetch(`/api/atendimentos/${id}`, {
-                    method: 'DELETE'
-                });
+      if (mes) params.push(`mes=${mes}`);
+      if (agente) params.push(`agente_id=${agente}`);
+      if (params.length) url += '?' + params.join('&');
 
-                if (!response.ok) throw new Error('Erro ao excluir atendimento.');
+      try {
+        const response = await fetch(url);
+        if (!response.ok) throw new Error('Erro ao carregar atendimentos.');
 
-                alert('✅ Atendimento excluído com sucesso!');
-                carregarAtendimentos();
+        const atendimentos = await response.json();
+        const tabela = document.querySelector('#tabelaAtendimentos tbody');
+        tabela.innerHTML = '';
 
-            } catch (error) {
-                console.error('❌ Erro ao excluir atendimento:', error);
-                alert('❌ Erro ao excluir atendimento.');
-            }
-        }
+        atendimentos.forEach(atendimento => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td>${atendimento.cliente}</td>
+            <td>${atendimento.observacao || 'N/A'}</td>
+            <td>${atendimento.processo || 'N/A'}</td>
+            <td>${atendimento.data_solicitacao ? new Date(atendimento.data_solicitacao).toLocaleDateString('pt-BR') : 'N/A'}</td>
+            <td>${atendimento.data_instalacao ? new Date(atendimento.data_instalacao).toLocaleDateString('pt-BR') : 'N/A'}</td>
+            <td>${atendimento.sistema || 'N/A'}</td>
+            <td>${atendimento.ticket ? `<a href="${atendimento.ticket}" target="_blank">Abrir Ticket</a>` : 'N/A'}</td>
+            <td>${atendimento.agente || 'N/A'}</td>
+            <td>${atendimento.backup_cloud === 'Sim' ? 'Sim' : 'Não'}</td>
+            <td><button class="delete-btn" onclick="excluirAtendimento(${atendimento.id})">Excluir</button></td>
+          `;
+          tabela.appendChild(tr);
+        });
 
-        // ✅ Carregar atendimentos ao carregar a página
-        document.addEventListener('DOMContentLoaded', carregarAtendimentos);
-    </script>
+      } catch (error) {
+        console.error('❌ Erro ao listar atendimentos:', error);
+        alert('❌ Erro ao carregar atendimentos.');
+      }
+    }
+
+    async function excluirAtendimento(id) {
+      if (!confirm('Tem certeza que deseja excluir este atendimento?')) return;
+
+      try {
+        const response = await fetch(`/api/atendimentos/${id}`, { method: 'DELETE' });
+        if (!response.ok) throw new Error('Erro ao excluir atendimento.');
+        alert('✅ Atendimento excluído com sucesso!');
+        carregarAtendimentos();
+      } catch (error) {
+        console.error('❌ Erro ao excluir atendimento:', error);
+        alert('❌ Erro ao excluir atendimento.');
+      }
+    }
+
+    function preencherFiltroMes() {
+      const select = document.getElementById('filtroMes');
+      for (let i = 1; i <= 12; i++) {
+        const valor = i.toString().padStart(2, '0');
+        const option = document.createElement('option');
+        option.value = valor;
+        option.textContent = valor;
+        select.appendChild(option);
+      }
+    }
+
+    async function preencherFiltroAgente() {
+      try {
+        const response = await fetch('/api/agentes');
+        if (!response.ok) throw new Error();
+        const agentes = await response.json();
+        const select = document.getElementById('filtroAgente');
+        agentes.forEach(a => {
+          const option = document.createElement('option');
+          option.value = a.id;
+          option.textContent = a.nome;
+          select.appendChild(option);
+        });
+      } catch (e) {
+        console.error('Erro ao carregar agentes para filtro.');
+      }
+    }
+
+    function setTheme(theme) {
+      document.documentElement.setAttribute('data-theme', theme);
+      localStorage.setItem('temaPreferido', theme);
+      document.querySelector('.theme-toggle').textContent = theme === 'dark' ? '🌞' : '🌙';
+    }
+
+    function toggleTheme() {
+      const temaAtual = document.documentElement.getAttribute('data-theme') || 'light';
+      const novoTema = temaAtual === 'dark' ? 'light' : 'dark';
+      setTheme(novoTema);
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const temaSalvo = localStorage.getItem('temaPreferido') || 'light';
+      setTheme(temaSalvo);
+      preencherFiltroMes();
+      preencherFiltroAgente();
+      carregarAtendimentos();
+    });
+  </script>
 </body>
-
 </html>

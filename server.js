@@ -174,6 +174,9 @@ function listarRotas(app) {
 listarRotas(app);
 
 // Iniciar o servidor Express
-app.listen(PORT, () => {
-    console.log(`🚀 Servidor rodando em http://localhost:${PORT}`);
+app.listen(PORT, '0.0.0.0', () => {
+    console.log(`🚀 Servidor disponível em:`);
+    console.log(`🔗 Localhost:   http://localhost:${PORT}`);
+    console.log(`🔗 Nome da máquina: http://SUPTOPGER-022:${PORT}`);
 });
+

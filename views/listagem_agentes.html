@@ -78,7 +78,7 @@
                     <!-- Os agentes serão carregados aqui -->
                 </tbody>
             </table>
-            <a href="/" class="btn-voltar">🏠 Voltar</a>
+            <a href="/homepage" class="btn-voltar">🏠 Voltar</a>
         </div>
     </main>
 
@@ -137,10 +137,7 @@
                 }
 
                 alert("Agente excluído com sucesso!");
-
-                // Remover agente da tabela sem recarregar a página
                 document.querySelector(`tr[data-id='${id}']`).remove();
-
             } catch (erro) {
                 console.error("Erro ao excluir agente:", erro.message);
                 alert("Erro ao excluir agente.");
