@@ -2,156 +2,48 @@
 <html lang="pt-BR" data-theme="light">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Listagem de Atendimentos</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Consulta de Atendimentos</title>
   <link rel="icon" type="image/x-icon" href="/img/favicon.ico" />
   <style>
     :root {
-      --bg-color: #f5f5f5;
-      --text-color: #333;
-      --table-bg: #fff;
-      --header-bg: #f4f4f4;
-      --hover-bg: #e8f5e9;
-      --primary: #007bff;
-      --success: #4CAF50;
-      --danger: #dc3545;
-      --danger-hover: #bb2d3b;
+      --bg: #f8f9fa;
+      --text: #343a40;
+      --primary: #4CAF50;
+      --primary-hover: #45a049;
+      --card: #fff;
+      --border: #ddd;
+      --danger: #e74c3c;
+      --danger-hover: #c0392b;
     }
 
     [data-theme="dark"] {
-      --bg-color: #1e1e1e;
-      --text-color: #eee;
-      --table-bg: #2c2c2c;
-      --header-bg: #3a3a3a;
-      --hover-bg: #2e4732;
+      --bg: #1e1e1e;
+      --text: #f1f1f1;
+      --card: #2c2c2c;
+      --border: #444;
     }
 
     body {
       font-family: Arial, sans-serif;
-      margin: 20px;
-      background-color: var(--bg-color);
-      color: var(--text-color);
-    }
-
-    .container-top {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 10px;
+      background: var(--bg);
+      color: var(--text);
+      margin: 0;
+      padding: 20px;
+      transition: background 0.3s, color 0.3s;
     }
 
     h2 {
-      margin: 0 auto;
       text-align: center;
-    }
-
-    .voltar {
-      background-color: var(--primary);
-      color: white;
-      padding: 6px 12px;
-      border-radius: 6px;
-      text-decoration: none;
-      font-size: 0.9rem;
-    }
-
-    .voltar:hover {
-      background-color: #0056b3;
-    }
-
-    .filtros {
-      margin: 20px 0;
-      text-align: center;
-    }
-
-    .filtros label,
-    .filtros select {
-      margin: 0 8px;
-    }
-
-    .btn-acao {
-      padding: 8px 14px;
-      margin: 5px;
-      border: none;
-      border-radius: 5px;
-      font-size: 14px;
-      cursor: pointer;
-    }
-
-    .btn-filtrar {
-      background-color: var(--success);
-      color: white;
-    }
-
-    .btn-filtrar:hover {
-      background-color: #45a049;
-    }
-
-    .btn-novo {
-      background-color: var(--primary);
-      color: white;
-    }
-
-    .btn-novo:hover {
-      background-color: #0056b3;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      background-color: var(--table-bg);
-      box-shadow: 0 0 6px rgba(0, 0, 0, 0.05);
-      border-radius: 6px;
-      overflow: hidden;
-    }
-
-    th, td {
-      border: 1px solid #ddd;
-      padding: 8px 10px;
-      text-align: left;
-      font-size: 0.9rem;
-    }
-
-    th {
-      background-color: var(--header-bg);
-    }
-
-    tbody tr:hover {
-      background-color: var(--hover-bg);
-      transition: background-color 0.2s ease;
-    }
-
-    td {
-      max-width: 160px;
-      word-wrap: break-word;
-    }
-
-    .delete-btn {
-      background-color: var(--danger);
-      color: white;
-      padding: 5px 10px;
-      border: none;
-      cursor: pointer;
-      border-radius: 4px;
-    }
-
-    .delete-btn:hover {
-      background-color: var(--danger-hover);
-    }
-
-    a {
+      margin-bottom: 20px;
       color: var(--primary);
-      text-decoration: none;
-    }
-
-    a:hover {
-      text-decoration: underline;
     }
 
     .theme-toggle {
       position: fixed;
       top: 15px;
       right: 15px;
-      background-color: var(--link-bg, #007bff);
+      background-color: var(--primary);
       color: white;
       border: none;
       padding: 6px 10px;
@@ -159,144 +51,248 @@
       font-size: 0.9rem;
       cursor: pointer;
       z-index: 999;
-      white-space: nowrap;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-      transition: background-color 0.3s ease;
-      width: auto;
-      max-width: 150px;
     }
 
-    .theme-toggle:hover {
-      background-color: #0056b3;
+    .dashboard {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+
+    .card {
+      background: var(--card);
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      min-width: 200px;
+      text-align: center;
+    }
+
+    .card h3 {
+      margin: 0;
+      font-size: 1rem;
+      color: var(--primary);
+    }
+
+    .card span {
+      font-size: 2rem;
+      font-weight: bold;
+    }
+
+    .filtros {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .filtros label {
+      font-weight: bold;
+    }
+
+    .filtros select, .filtros input, .filtros button {
+      padding: 6px 12px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+    }
+
+    .filtros button {
+      background: var(--primary);
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+
+    .filtros button:hover {
+      background: var(--primary-hover);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--card);
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    }
+
+    th, td {
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+      text-align: left;
+    }
+
+    th {
+      background: var(--primary);
+      color: #fff;
+    }
+
+    tr:hover {
+      background-color: #f1f1f1;
+    }
+
+    .btn-delete {
+      background: var(--danger);
+      color: white;
+      padding: 6px 10px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .btn-delete:hover {
+      background: var(--danger-hover);
+    }
+
+    .btn-voltar {
+      display: block;
+      width: fit-content;
+      margin: 30px auto 0;
+      padding: 10px 20px;
+      background: var(--primary);
+      color: white;
+      border-radius: 6px;
+      text-decoration: none;
+    }
+
+    .btn-voltar:hover {
+      background: var(--primary-hover);
     }
   </style>
+<!-- ... início do <head> permanece igual ... -->
+  </style>
 </head>
-
 <body>
-  <button class="theme-toggle" onclick="toggleTheme()">🌙 Tema Escuro</button>
+  <button class="theme-toggle" onclick="toggleTheme()">🌙</button>
 
-  <div class="container-top">
-    <a href="/homepage" class="voltar">⬅ Voltar</a>
-    <h2>Listagem de Atendimentos</h2>
-    <div style="width: 80px;"></div> <!-- espaço alinhado ao botão -->
+  <a href="/homepage" class="btn-voltar" style="margin: 15px 0 20px 0;">⬅ Voltar para Homepage</a>
+
+  <h2>Consulta de Atendimentos</h2>
+
+  <div class="dashboard">
+    <div class="card">
+      <h3>Total no Mês</h3>
+      <span id="totalMes">0</span>
+    </div>
+    <div class="card">
+      <h3>Instalações</h3>
+      <span id="totalInstalacoes">0</span>
+    </div>
+    <div class="card">
+      <h3>Reinstalações</h3>
+      <span id="totalReinstalacoes">0</span>
+    </div>
   </div>
 
   <div class="filtros">
     <label for="filtroMes">Mês:</label>
-    <select id="filtroMes">
-      <option value="">Todos</option>
-    </select>
+    <input type="month" id="filtroMes" />
 
     <label for="filtroAgente">Agente:</label>
-    <select id="filtroAgente">
-      <option value="">Todos</option>
-    </select>
+    <select id="filtroAgente"><option value="">Todos</option></select>
 
-    <button class="btn-acao btn-filtrar" onclick="carregarAtendimentos()">Filtrar</button>
-    <button class="btn-acao btn-novo" onclick="window.location.href='/views/cadastro.html'">➕ Novo Atendimento</button>
+    <label for="filtroProcesso">Processo:</label>
+    <select id="filtroProcesso"><option value="">Todos</option></select>
+
+    <button onclick="buscarAtendimentos()">🔍 Buscar</button>
   </div>
 
-  <table id="tabelaAtendimentos">
+  <div style="text-align: right; margin-bottom: 15px;">
+    <a href="/views/cadastro.html" style="padding: 8px 16px; background-color: var(--primary); color: white; border-radius: 6px; text-decoration: none;">
+      ➕ Novo Atendimento
+    </a>
+  </div>
+
+  <table>
     <thead>
       <tr>
+        <th>Data</th>
         <th>Cliente</th>
-        <th>Observação</th>
-        <th>Processo</th>
-        <th>Data Solicitação</th>
-        <th>Data Instalação</th>
-        <th>Sistema</th>
-        <th>Ticket</th>
         <th>Agente</th>
-        <th>Backup Cloud</th>
+        <th>Processo</th>
+        <th>Ticket</th>
         <th>Ações</th>
       </tr>
     </thead>
-    <tbody></tbody>
+    <tbody id="tabelaAtendimentos">
+      <tr><td colspan="6" style="text-align:center;">Carregando...</td></tr>
+    </tbody>
   </table>
 
   <script>
-    async function carregarAtendimentos() {
-      const mes = document.getElementById('filtroMes').value;
+    async function buscarAtendimentos() {
+      const mes = document.getElementById('filtroMes').value || new Date().toISOString().slice(0, 7);
+      const [ano, mesNum] = mes.split('-');
       const agente = document.getElementById('filtroAgente').value;
+      const processo = document.getElementById('filtroProcesso').value;
 
-      let url = '/api/atendimentos';
-      const params = [];
-
-      if (mes) params.push(`mes=${mes}`);
-      if (agente) params.push(`agente_id=${agente}`);
-      if (params.length) url += '?' + params.join('&');
+      let url = `/api/atendimentos?mes=${mesNum}&ano=${ano}`;
+      if (agente) url += `&agente_id=${agente}`;
+      if (processo) url += `&processos=${processo}`;
 
       try {
-        const response = await fetch(url);
-        if (!response.ok) throw new Error('Erro ao carregar atendimentos.');
+        const res = await fetch(url);
+        const dados = await res.json();
+        const tbody = document.getElementById('tabelaAtendimentos');
+        tbody.innerHTML = dados.length
+          ? dados.map(at => `
+            <tr>
+              <td>${new Date(at.data_solicitacao).toLocaleDateString()}</td>
+              <td>${at.cliente}</td>
+              <td>${at.agente || 'N/A'}</td>
+              <td>${at.processo || 'N/A'}</td>
+              <td>${at.ticket ? `<a href="${at.ticket}" target="_blank">Abrir</a>` : 'N/A'}</td>
+              <td><button class="btn-delete" onclick="excluirAtendimento(${at.id})">Excluir</button></td>
+            </tr>
+          `).join('')
+          : '<tr><td colspan="6" style="text-align:center;">Nenhum atendimento encontrado</td></tr>';
 
-        const atendimentos = await response.json();
-        const tabela = document.querySelector('#tabelaAtendimentos tbody');
-        tabela.innerHTML = '';
-
-        atendimentos.forEach(atendimento => {
-          const tr = document.createElement('tr');
-          tr.innerHTML = `
-            <td>${atendimento.cliente}</td>
-            <td>${atendimento.observacao || 'N/A'}</td>
-            <td>${atendimento.processo || 'N/A'}</td>
-            <td>${atendimento.data_solicitacao ? new Date(atendimento.data_solicitacao).toLocaleDateString('pt-BR') : 'N/A'}</td>
-            <td>${atendimento.data_instalacao ? new Date(atendimento.data_instalacao).toLocaleDateString('pt-BR') : 'N/A'}</td>
-            <td>${atendimento.sistema || 'N/A'}</td>
-            <td>${atendimento.ticket ? `<a href="${atendimento.ticket}" target="_blank">Abrir Ticket</a>` : 'N/A'}</td>
-            <td>${atendimento.agente || 'N/A'}</td>
-            <td>${atendimento.backup_cloud === 'Sim' ? 'Sim' : 'Não'}</td>
-            <td><button class="delete-btn" onclick="excluirAtendimento(${atendimento.id})">Excluir</button></td>
-          `;
-          tabela.appendChild(tr);
-        });
-
+        document.getElementById('totalMes').textContent = dados.length;
+        document.getElementById('totalInstalacoes').textContent = dados.filter(a => a.processo === 'Instalação de Sistema').length;
+        document.getElementById('totalReinstalacoes').textContent = dados.filter(a => a.processo === 'Reinstalação Servidor').length;
       } catch (error) {
-        console.error('❌ Erro ao listar atendimentos:', error);
-        alert('❌ Erro ao carregar atendimentos.');
+        console.error(error);
+        alert('Erro ao carregar atendimentos.');
       }
     }
 
     async function excluirAtendimento(id) {
-      if (!confirm('Tem certeza que deseja excluir este atendimento?')) return;
-
+      if (!confirm('Deseja excluir este atendimento?')) return;
       try {
-        const response = await fetch(`/api/atendimentos/${id}`, { method: 'DELETE' });
-        if (!response.ok) throw new Error('Erro ao excluir atendimento.');
-        alert('✅ Atendimento excluído com sucesso!');
-        carregarAtendimentos();
-      } catch (error) {
-        console.error('❌ Erro ao excluir atendimento:', error);
+        const res = await fetch(`/api/atendimentos/${id}`, { method: 'DELETE' });
+        if (!res.ok) throw new Error();
+        alert('✅ Atendimento excluído!');
+        buscarAtendimentos();
+      } catch {
         alert('❌ Erro ao excluir atendimento.');
       }
     }
 
-    function preencherFiltroMes() {
-      const select = document.getElementById('filtroMes');
-      for (let i = 1; i <= 12; i++) {
-        const valor = i.toString().padStart(2, '0');
-        const option = document.createElement('option');
-        option.value = valor;
-        option.textContent = valor;
-        select.appendChild(option);
-      }
+    async function preencherFiltroAgente() {
+      const res = await fetch('/api/agentes');
+      const dados = await res.json();
+      const select = document.getElementById('filtroAgente');
+      dados.forEach(a => {
+        const opt = document.createElement('option');
+        opt.value = a.id;
+        opt.textContent = a.nome;
+        select.appendChild(opt);
+      });
     }
 
-    async function preencherFiltroAgente() {
-      try {
-        const response = await fetch('/api/agentes');
-        if (!response.ok) throw new Error();
-        const agentes = await response.json();
-        const select = document.getElementById('filtroAgente');
-        agentes.forEach(a => {
-          const option = document.createElement('option');
-          option.value = a.id;
-          option.textContent = a.nome;
-          select.appendChild(option);
-        });
-      } catch (e) {
-        console.error('Erro ao carregar agentes para filtro.');
-      }
+    async function preencherFiltroProcesso() {
+      const res = await fetch('/api/processos');
+      const dados = await res.json();
+      const select = document.getElementById('filtroProcesso');
+      dados.forEach(p => {
+        const opt = document.createElement('option');
+        opt.value = p.id;
+        opt.textContent = p.nome;
+        select.appendChild(opt);
+      });
     }
 
     function setTheme(theme) {
@@ -306,18 +302,19 @@
     }
 
     function toggleTheme() {
-      const temaAtual = document.documentElement.getAttribute('data-theme') || 'light';
-      const novoTema = temaAtual === 'dark' ? 'light' : 'dark';
-      setTheme(novoTema);
+      const atual = document.documentElement.getAttribute('data-theme') || 'light';
+      const novo = atual === 'dark' ? 'light' : 'dark';
+      setTheme(novo);
     }
 
-    document.addEventListener('DOMContentLoaded', () => {
-      const temaSalvo = localStorage.getItem('temaPreferido') || 'light';
-      setTheme(temaSalvo);
-      preencherFiltroMes();
-      preencherFiltroAgente();
-      carregarAtendimentos();
+    document.addEventListener('DOMContentLoaded', async () => {
+      const tema = localStorage.getItem('temaPreferido') || 'light';
+      setTheme(tema);
+      await preencherFiltroAgente();
+      await preencherFiltroProcesso();
+      buscarAtendimentos();
     });
   </script>
 </body>
 </html>
+

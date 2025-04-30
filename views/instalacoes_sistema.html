@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Instalações por Sistema</title>
+  <link rel="icon" type="image/x-icon" href="/img/favicon.ico" />
+  <style>
+    :root {
+      --bg-color: #f8f9fa;
+      --text-color: #343a40;
+      --card-bg: #fff;
+      --header-color: #2C3E50;
+      --border-color: #ccc;
+      --hover-color: #f1f1f1;
+      --thead-bg: linear-gradient(90deg, #007bff, #0056b3);
+      --primary: #007bff;
+      --primary-hover: #0056b3;
+    }
+
+    [data-theme="dark"] {
+      --bg-color: #1e1e1e;
+      --text-color: #e0e0e0;
+      --card-bg: #2c2c2c;
+      --header-color: #f5f5f5;
+      --border-color: #444;
+      --hover-color: #2a2a2a;
+      --thead-bg: linear-gradient(90deg, #3498db, #2980b9);
+      --primary: #3498db;
+      --primary-hover: #2980b9;
+    }
+
+    body {
+      font-family: 'Arial', sans-serif;
+      margin: 20px;
+      background: var(--bg-color);
+      color: var(--text-color);
+    }
+
+    h2 {
+      text-align: center;
+      color: var(--header-color);
+    }
+
+    .theme-toggle {
+      position: fixed;
+      top: 15px;
+      right: 15px;
+      background-color: var(--primary);
+      color: white;
+      border: none;
+      padding: 6px 10px;
+      border-radius: 50px;
+      font-size: 0.9rem;
+      cursor: pointer;
+      z-index: 999;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    }
+
+    .theme-toggle:hover {
+      background-color: var(--primary-hover);
+    }
+
+    .filtros {
+      text-align: center;
+      margin: 20px 0;
+    }
+
+    .filtros input, .filtros select, .filtros button {
+      padding: 8px 12px;
+      margin: 0 8px;
+      border-radius: 6px;
+      border: 1px solid var(--border-color);
+      background-color: var(--card-bg);
+      color: var(--text-color);
+    }
+
+    button {
+      background-color: var(--primary);
+      color: white;
+      cursor: pointer;
+      border: none;
+    }
+
+    button:hover {
+      background-color: var(--primary-hover);
+    }
+
+    .table-container {
+      max-width: 700px;
+      margin: 30px auto;
+      background: var(--card-bg);
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th, td {
+      padding: 14px;
+      border-bottom: 1px solid var(--border-color);
+      text-align: left;
+    }
+
+    thead {
+      background: var(--thead-bg);
+      color: white;
+    }
+
+    tbody tr:hover {
+      background-color: var(--hover-color);
+    }
+
+    .chart-container {
+      max-width: 600px;
+      margin: 40px auto;
+    }
+
+    .btn-voltar {
+      display: block;
+      margin: 30px auto 0;
+      padding: 10px 18px;
+      background: var(--primary);
+      color: white;
+      text-decoration: none;
+      border-radius: 6px;
+      text-align: center;
+      width: fit-content;
+    }
+
+    .btn-voltar:hover {
+      background: var(--primary-hover);
+    }
+  </style>
+</head>
+<body>
+  <button class="theme-toggle" onclick="toggleTheme()">🌙 Tema Escuro</button>
+
+  <h2>Instalações por Sistema</h2>
+
+  <div class="filtros">
+    <label for="filtroMes">Mês:</label>
+    <input type="month" id="filtroMes" />
+
+    <label for="tipoGrafico">Gráfico:</label>
+    <select id="tipoGrafico">
+      <option value="bar">Barra</option>
+      <option value="pie">Pizza</option>
+      <option value="doughnut">Doughnut</option>
+    </select>
+
+    <button onclick="carregarInstalacoes()">🔍 Buscar</button>
+  </div>
+
+  <div class="table-container">
+    <table>
+      <thead>
+        <tr>
+          <th>Sistema</th>
+          <th>Instalações</th>
+          <th>Reinstalações</th>
+        </tr>
+      </thead>
+      <tbody id="tabelaSistemas">
+        <tr><td colspan="3" style="text-align: center;">Carregando...</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="chart-container">
+    <canvas id="graficoSistemas"></canvas>
+  </div>
+
+  <a href="/views/relatorios.html" class="btn-voltar">⬅ Voltar para Relatórios</a>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    let grafico;
+
+    function setTheme(theme) {
+      document.documentElement.setAttribute('data-theme', theme);
+      localStorage.setItem('temaPreferido', theme);
+      document.querySelector('.theme-toggle').textContent = theme === 'dark' ? '🌞 Tema Claro' : '🌙 Tema Escuro';
+    }
+
+    function toggleTheme() {
+      const atual = document.documentElement.getAttribute('data-theme') || 'light';
+      const novo = atual === 'dark' ? 'light' : 'dark';
+      setTheme(novo);
+    }
+
+    async function carregarInstalacoes() {
+      const mesSelecionado = document.getElementById('filtroMes').value || new Date().toISOString().slice(0, 7);
+      const [ano, mes] = mesSelecionado.split('-');
+      const url = `/api/relatorios/sistemas?mes=${mes}&ano=${ano}`;
+
+      const tabela = document.getElementById('tabelaSistemas');
+      tabela.innerHTML = `<tr><td colspan="3" style="text-align: center;">Carregando...</td></tr>`;
+
+      try {
+        const res = await fetch(url);
+        if (!res.ok) throw new Error('Erro ao buscar dados');
+        const dados = await res.json();
+
+        if (dados.length === 0) {
+          tabela.innerHTML = `<tr><td colspan="3" style="text-align: center;">Nenhuma instalação encontrada.</td></tr>`;
+          return;
+        }
+
+        tabela.innerHTML = '';
+        const labels = [];
+        const valores = [];
+
+        dados.forEach(({ sistema, instalacoes, reinstalacoes }) => {
+          tabela.innerHTML += `<tr><td>${sistema}</td><td>${instalacoes}</td><td>${reinstalacoes}</td></tr>`;
+          labels.push(sistema);
+          valores.push(instalacoes);
+        });
+
+        atualizarGrafico(labels, valores);
+      } catch (e) {
+        console.error(e);
+        tabela.innerHTML = `<tr><td colspan="3" style="text-align: center;">❌ Erro ao carregar dados</td></tr>`;
+      }
+    }
+
+    function atualizarGrafico(labels, valores) {
+      const tipoSelecionado = document.getElementById('tipoGrafico').value;
+      const ctx = document.getElementById('graficoSistemas').getContext('2d');
+
+      if (grafico) grafico.destroy();
+
+      grafico = new Chart(ctx, {
+        type: tipoSelecionado,
+        data: {
+          labels,
+          datasets: [{
+            label: 'Instalações',
+            data: valores,
+            backgroundColor: ['#007bff', '#FF5733', '#28a745', '#ffc107', '#6f42c1'],
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: { position: 'bottom' }
+          }
+        }
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const tema = localStorage.getItem('temaPreferido') || 'light';
+      setTheme(tema);
+      carregarInstalacoes();
+
+      document.getElementById('tipoGrafico').addEventListener('change', () => {
+        carregarInstalacoes();
+      });
+    });
+  </script>
+</body>
+</html>

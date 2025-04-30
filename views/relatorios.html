@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Relatórios de Atendimentos</title>
   <link rel="icon" type="image/x-icon" href="/img/favicon.ico" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     :root {
       --bg-color: #f8f9fa;
@@ -45,6 +46,7 @@
     h2 {
       text-align: center;
       color: var(--header-color);
+      margin-bottom: 10px;
     }
 
     .theme-toggle {
@@ -59,42 +61,35 @@
       font-size: 0.9rem;
       cursor: pointer;
       z-index: 999;
-      white-space: nowrap;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-      transition: background-color 0.3s ease;
     }
 
-    .theme-toggle:hover {
-      background-color: var(--blue-hover);
-    }
+    .theme-toggle:hover { background-color: var(--blue-hover); }
 
-    .filtros {
+    .filtros, .nav-relatorios {
       text-align: center;
-      margin: 20px 0;
+      margin-bottom: 20px;
     }
 
-    .filtros select, .filtros input, .filtros button {
-      margin: 0 10px;
+    .filtros input, .filtros select, .filtros button, .nav-relatorios button {
+      margin: 0 8px;
       padding: 8px 12px;
       border-radius: 6px;
       border: 1px solid var(--border-color);
       background-color: var(--card-bg);
       color: var(--text-color);
+      font-weight: bold;
     }
 
     button {
       background-color: var(--primary);
       color: white;
-      border: none;
       cursor: pointer;
     }
 
-    button:hover {
-      background-color: var(--primary-hover);
-    }
+    button:hover { background-color: var(--primary-hover); }
 
-    .table-container {
-      max-width: 1000px;
+    .chart-container, .table-container {
+      max-width: 800px;
       margin: 20px auto;
       background: var(--card-bg);
       border-radius: 10px;
@@ -102,74 +97,29 @@
       box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
     }
 
-    table {
-      width: 100%;
-      border-collapse: collapse;
-    }
-
-    th, td {
-      padding: 12px 15px;
-      border-bottom: 1px solid var(--border-color);
-      text-align: left;
-    }
-
-    thead {
-      background: var(--thead-bg);
-      color: white;
-    }
-
-    tbody tr:hover {
-      background-color: var(--hover-color);
-    }
-
-    .chart-container {
-      max-width: 600px;
-      margin: 30px auto;
-    }
-
-    .mini-tabela {
-      max-width: 600px;
-      margin: 30px auto;
-      background: var(--card-bg);
-      border-radius: 8px;
-      overflow: hidden;
-      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
-    }
-
-    .mini-tabela th {
-      background: var(--blue);
-      color: white;
-    }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { padding: 12px 15px; border-bottom: 1px solid var(--border-color); text-align: left; }
+    thead { background: var(--thead-bg); color: white; }
+    tbody tr:hover { background-color: var(--hover-color); }
 
     .btn-voltar {
       display: inline-block;
-      margin: 20px;
-      padding: 10px 16px;
+      margin: 30px auto;
+      padding: 10px 18px;
       background: var(--blue);
       color: white;
+      border-radius: 6px;
       text-decoration: none;
-      border-radius: 5px;
+      text-align: center;
     }
 
-    .btn-voltar:hover {
-      background: var(--blue-hover);
-    }
-
-    #btnDetalhes {
-      display: block;
-      margin: 0 auto 20px;
-    }
-
-    #tabelaRelatorio {
-      display: none;
-    }
+    .relatorio-section { display: none; }
+    .relatorio-section.ativo { display: block; }
   </style>
 </head>
 <body>
-  <button class="theme-toggle" onclick="toggleTheme()">🌙 Tema Escuro</button>
-
+  <button class="theme-toggle" onclick="toggleTheme()">🌙</button>
   <h2>Relatórios de Atendimentos</h2>
-
   <div class="filtros">
     <label for="filtroMes">Mês:</label>
     <input type="month" id="filtroMes" />
@@ -183,175 +133,198 @@
 
     <label for="tipoGrafico">Tipo de Gráfico:</label>
     <select id="tipoGrafico">
-      <option value="pie">Pizza</option>
       <option value="bar">Barra</option>
+      <option value="pie">Pizza</option>
       <option value="doughnut">Doughnut</option>
     </select>
 
-    <button onclick="carregarRelatorio()">Filtrar</button>
+    <button onclick="carregarRelatorio()">🔍 Buscar</button>
   </div>
 
-  <div class="mini-tabela">
-    <table id="tabelaAgentes">
-      <thead>
-        <tr>
-          <th>Agente</th>
-          <th>Total de Atendimentos</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
+  <div class="nav-relatorios">
+    <button onclick="mostrarSecao('processos')">🔁 Por Processo</button>
+    <button onclick="mostrarSecao('sistemas')">💻 Por Sistema</button>
+    <button onclick="mostrarSecao('agentes')">👥 Por Agente</button>
+    <button onclick="mostrarSecao('comparativo')">📊 Comparativo</button>
   </div>
 
-  <div class="chart-container">
-    <canvas id="graficoAtendimentos"></canvas>
+  <div id="secao-processos" class="relatorio-section ativo">
+    <div class="chart-container"><canvas id="graficoProcessos"></canvas></div>
+    <div class="table-container">
+      <table>
+        <thead><tr><th>Processo</th><th>Quantidade</th></tr></thead>
+        <tbody id="tabelaProcessos"></tbody>
+      </table>
+    </div>
   </div>
 
-  <button id="btnDetalhes" onclick="toggleDetalhes()">Ver Detalhes</button>
+  <div id="secao-sistemas" class="relatorio-section">
+    <div class="chart-container"><canvas id="graficoSistemas"></canvas></div>
+  </div>
 
-  <div class="table-container" id="tabelaRelatorio">
-    <table>
-      <thead>
-        <tr>
-          <th>Processo</th>
-          <th>Quantidade</th>
-        </tr>
-      </thead>
-      <tbody id="tabelaProcessos"></tbody>
-    </table>
+  <div id="secao-agentes" class="relatorio-section">
+    <div class="table-container">
+      <table>
+        <thead><tr><th>Agente</th><th>Total</th></tr></thead>
+        <tbody id="tabelaAgentes"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div id="secao-comparativo" class="relatorio-section">
+    <div class="chart-container"><canvas id="graficoComparativoProcessos"></canvas></div>
+    <div class="chart-container"><canvas id="graficoComparativoSistemas"></canvas></div>
   </div>
 
   <a href="/homepage" class="btn-voltar">⬅ Voltar</a>
+<script>
+  let graficoProcessos, graficoSistemas, graficoComparativoProcessos, graficoComparativoSistemas;
 
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script>
-    let grafico;
-    let dadosOriginais = [];
+  function setTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('temaPreferido', theme);
+    document.querySelector('.theme-toggle').textContent = theme === 'dark' ? '🌞' : '🌙';
+  }
 
-    function setTheme(theme) {
-      document.documentElement.setAttribute('data-theme', theme);
-      localStorage.setItem('temaPreferido', theme);
-      document.querySelector('.theme-toggle').textContent = theme === 'dark' ? '🌞' : '🌙';
-    }
+  function toggleTheme() {
+    const atual = document.documentElement.getAttribute('data-theme') || 'light';
+    const novo = atual === 'dark' ? 'light' : 'dark';
+    setTheme(novo);
+  }
 
-    function toggleTheme() {
-      const atual = document.documentElement.getAttribute('data-theme') || 'light';
-      const novo = atual === 'dark' ? 'light' : 'dark';
-      setTheme(novo);
-    }
+  function mostrarSecao(secao) {
+    document.querySelectorAll('.relatorio-section').forEach(div => div.classList.remove('ativo'));
+    document.getElementById(`secao-${secao}`).classList.add('ativo');
+  }
 
-    function toggleDetalhes() {
-      const tabela = document.getElementById('tabelaRelatorio');
-      const btn = document.getElementById('btnDetalhes');
-      tabela.style.display = tabela.style.display === 'none' ? 'block' : 'none';
-      btn.textContent = tabela.style.display === 'block' ? 'Ocultar Detalhes' : 'Ver Detalhes';
-    }
+  function getFiltroParams() {
+    const mesSelecionado = document.getElementById('filtroMes').value || new Date().toISOString().slice(0, 7);
+    const [ano, mes] = mesSelecionado.split('-');
+    const backupCloud = document.getElementById('filtroBackup').value;
+    return { mes, ano, backupCloud };
+  }
 
-    async function carregarRelatorio() {
-      const mesSelecionado = document.getElementById('filtroMes').value || new Date().toISOString().slice(0, 7);
-      const [ano, mes] = mesSelecionado.split('-');
-      const backupCloud = document.getElementById('filtroBackup').value;
+  async function carregarRelatorio() {
+    const { mes, ano, backupCloud } = getFiltroParams();
+    const tipo = document.getElementById('tipoGrafico').value;
 
-      const url = `/api/relatorios?mes=${mes}&ano=${ano}${backupCloud ? `&backup_cloud=${backupCloud}` : ''}`;
+    await carregarProcessos(mes, ano, backupCloud, tipo);
+    await carregarSistemas(mes, ano, tipo);
+    await carregarAgentes(mes, ano, backupCloud);
+    await carregarComparativo(mes, ano);
+  }
 
-      try {
-        const response = await fetch(url);
-        if (!response.ok) throw new Error();
+  async function carregarProcessos(mes, ano, backupCloud, tipo) {
+    let url = `/api/relatorios?mes=${mes}&ano=${ano}`;
+    if (backupCloud) url += `&backup_cloud=${backupCloud}`;
+    const res = await fetch(url);
+    const dados = await res.json();
 
-        const dados = await response.json();
-        dadosOriginais = dados;
+    const labels = dados.map(d => d.processo);
+    const valores = dados.map(d => d.total);
+    const tabela = document.getElementById('tabelaProcessos');
+    tabela.innerHTML = dados.map(d => `<tr><td>${d.processo}</td><td>${d.total}</td></tr>`).join('');
 
-        atualizarGrafico(dados);
-        atualizarTabela(dados);
-        carregarTotaisAgentes(mes, ano, backupCloud);
-      } catch (e) {
-        alert('❌ Erro ao carregar relatório.');
-      }
-    }
-
-    function atualizarTabela(dados) {
-      const tabela = document.getElementById('tabelaProcessos');
-      tabela.innerHTML = '';
-
-      if (dados.length === 0) {
-        tabela.innerHTML = `<tr><td colspan="2" style="text-align: center;">Nenhum registro encontrado.</td></tr>`;
-        return;
-      }
-
-      dados.forEach(({ processo, total }) => {
-        const tr = document.createElement('tr');
-        tr.innerHTML = `<td>${processo}</td><td>${total}</td>`;
-        tabela.appendChild(tr);
-      });
-    }
-
-    function atualizarGrafico(dados) {
-      const ctx = document.getElementById('graficoAtendimentos').getContext('2d');
-      const tipoSelecionado = document.getElementById('tipoGrafico').value;
-
-      if (grafico) grafico.destroy();
-
-      const top5 = dados.slice(0, 5);
-      const outros = dados.slice(5);
-      const totalOutros = outros.reduce((sum, item) => sum + item.total, 0);
-
-      const labels = top5.map(p => p.processo);
-      const valores = top5.map(p => p.total);
-
-      if (totalOutros > 0) {
-        labels.push('Outros');
-        valores.push(totalOutros);
-      }
-
-      grafico = new Chart(ctx, {
-        type: tipoSelecionado,
-        data: {
-          labels,
-          datasets: [{
-            label: 'Atendimentos',
-            data: valores,
-            backgroundColor: ['#4CAF50', '#FF5733', '#36A2EB', '#FFCE56', '#9C27B0', '#B0BEC5'],
-          }]
-        },
-        options: {
-          responsive: true,
-          plugins: {
-            legend: { position: 'bottom' }
-          }
-        }
-      });
-    }
-
-    async function carregarTotaisAgentes(mes, ano, backupCloud) {
-      try {
-        let url = `/api/relatorios/agentes?mes=${mes}&ano=${ano}`;
-        if (backupCloud) url += `&backup_cloud=${backupCloud}`;
-
-        const res = await fetch(url);
-        if (!res.ok) throw new Error();
-
-        const dados = await res.json();
-        const tabela = document.querySelector('#tabelaAgentes tbody');
-        tabela.innerHTML = '';
-
-        dados.forEach(({ agente, total }) => {
-          tabela.innerHTML += `<tr><td>${agente}</td><td>${total}</td></tr>`;
-        });
-      } catch (e) {
-        console.error('Erro ao carregar total de agentes');
-      }
-    }
-
-    document.addEventListener('DOMContentLoaded', () => {
-      const tema = localStorage.getItem('temaPreferido') || 'light';
-      setTheme(tema);
-      carregarRelatorio();
-      document.getElementById('tabelaRelatorio').style.display = 'none';
-
-      document.getElementById('tipoGrafico').addEventListener('change', () => {
-        atualizarGrafico(dadosOriginais);
-      });
+    if (graficoProcessos) graficoProcessos.destroy();
+    graficoProcessos = new Chart(document.getElementById('graficoProcessos'), {
+      type: tipo,
+      data: {
+        labels,
+        datasets: [{ label: 'Processos', data: valores, backgroundColor: '#4CAF50' }]
+      },
+      options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
     });
-  </script>
+  }
+
+  async function carregarSistemas(mes, ano, tipo) {
+    const res = await fetch(`/api/relatorios/sistemas?mes=${mes}&ano=${ano}`);
+    const dados = await res.json();
+
+    const labels = dados.map(d => d.sistema);
+    const valores = dados.map(d => d.instalacoes);
+
+    if (graficoSistemas) graficoSistemas.destroy();
+    graficoSistemas = new Chart(document.getElementById('graficoSistemas'), {
+      type: tipo,
+      data: {
+        labels,
+        datasets: [{ label: 'Instalações', data: valores, backgroundColor: '#007bff' }]
+      },
+      options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
+    });
+  }
+
+  async function carregarAgentes(mes, ano, backupCloud) {
+    let url = `/api/relatorios/agentes?mes=${mes}&ano=${ano}`;
+    if (backupCloud) url += `&backup_cloud=${backupCloud}`;
+    const res = await fetch(url);
+    const dados = await res.json();
+
+    const tbody = document.getElementById('tabelaAgentes');
+    tbody.innerHTML = dados.map(d => `<tr><td>${d.agente}</td><td>${d.total}</td></tr>`).join('');
+  }
+
+  async function carregarComparativo(mes, ano) {
+  const res = await fetch(`/api/relatorios/comparativo-processos?mes=${mes}&ano=${ano}`);
+  const dados = await res.json();
+  const processos = dados.processos;
+
+  const labels = processos.map(p => p.processo);
+  const atual = processos.map(p => p.total_atual);
+  const anterior = processos.map(p => p.total_anterior);
+
+  // Tabela com tendência (atualiza a tabela de processos, se desejar)
+  const tabela = document.getElementById('tabelaProcessos');
+  if (tabela) {
+    tabela.innerHTML = processos.map(p => {
+      const icone = p.total_atual > p.total_anterior
+        ? '🔼'
+        : p.total_atual < p.total_anterior
+        ? '🔽'
+        : '➖';
+      return `<tr><td>${p.processo}</td><td>${p.total_atual} ${icone}</td></tr>`;
+    }).join('');
+  }
+
+  if (graficoComparativoProcessos) graficoComparativoProcessos.destroy();
+  graficoComparativoProcessos = new Chart(document.getElementById('graficoComparativoProcessos'), {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [
+        { label: 'Mês Atual', data: atual, backgroundColor: '#4CAF50' },
+        { label: 'Mês Anterior', data: anterior, backgroundColor: '#FF5733' }
+      ]
+    },
+    options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
+  });
+
+  // Carregar comparativo de sistemas
+  const sistemasRes = await fetch(`/api/relatorios/sistemas-comparativo?mes=${mes}&ano=${ano}`);
+  const sist = await sistemasRes.json();
+  const labelsS = sist.map(s => s.sistema);
+  const atualS = sist.map(s => s.instalacoes_atual);
+  const anteriorS = sist.map(s => s.instalacoes_anterior);
+
+  if (graficoComparativoSistemas) graficoComparativoSistemas.destroy();
+  graficoComparativoSistemas = new Chart(document.getElementById('graficoComparativoSistemas'), {
+    type: 'bar',
+    data: {
+      labels: labelsS,
+      datasets: [
+        { label: 'Mês Atual', data: atualS, backgroundColor: '#007bff' },
+        { label: 'Mês Anterior', data: anteriorS, backgroundColor: '#ffc107' }
+      ]
+    },
+    options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
+  });
+}
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const tema = localStorage.getItem('temaPreferido') || 'light';
+    setTheme(tema);
+    carregarRelatorio();
+  });
+</script>
 </body>
 </html>

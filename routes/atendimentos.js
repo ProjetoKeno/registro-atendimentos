@@ -54,10 +54,18 @@ router.post('/', async (req, res) => {
   }
 });
 
-// 📌 Listar atendimentos com filtros (com fallback para mês/ano atual)
+// 📌 Listar atendimentos com filtros
 router.get('/', async (req, res) => {
   try {
-    const { mes, ano, agente_id } = req.query;
+    const {
+      mes,
+      ano,
+      agente_id,
+      cliente,
+      sistema,
+      processos: processo_id, // 👈 renomeando aqui
+      ticket
+    } = req.query;
 
     const agora = new Date();
     const mesFiltrado = mes || String(agora.getMonth() + 1).padStart(2, '0');
@@ -82,7 +90,26 @@ router.get('/', async (req, res) => {
       params.push(agente_id);
     }
 
-    // 🔽 Ordenar pela data de solicitação (mais recentes primeiro)
+    if (cliente) {
+      sql += ' AND a.cliente LIKE ?';
+      params.push(`%${cliente}%`);
+    }
+
+    if (sistema) {
+      sql += ' AND a.sistema LIKE ?';
+      params.push(`%${sistema}%`);
+    }
+
+    if (processo_id) {
+      sql += ' AND p.id = ?';
+      params.push(processo_id);
+    }
+
+    if (ticket) {
+      sql += ' AND a.ticket LIKE ?';
+      params.push(`%${ticket}%`);
+    }
+
     sql += ' ORDER BY a.data_solicitacao DESC';
 
     const [rows] = await db.query(sql, params);

@@ -1,77 +1,112 @@
+:root {
+  --bg: #f4f4f9;
+  --text: #333;
+  --card: #fff;
+  --border: #ccc;
+  --primary: #4CAF50;
+  --primary-hover: #45a049;
+  --navbar-bg: #333;
+  --navbar-link: #fff;
+  --navbar-hover: #555;
+}
+
+[data-theme="dark"] {
+  --bg: #1e1e1e;
+  --text: #f1f1f1;
+  --card: #2c2c2c;
+  --border: #555;
+  --navbar-bg: #111;
+  --navbar-link: #fff;
+  --navbar-hover: #222;
+}
+
 body {
-    font-family: Arial, sans-serif;
-    background-color: #f4f4f9;
-    margin: 0;
-    padding: 0;
+  font-family: Arial, sans-serif;
+  background-color: var(--bg);
+  color: var(--text);
+  margin: 0;
+  padding: 0;
+  transition: background 0.3s, color 0.3s;
 }
 
 .container {
-    max-width: 600px;
-    margin: 50px auto;
-    padding: 20px;
-    background-color: #fff;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  max-width: 600px;
+  margin: 50px auto;
+  padding: 20px;
+  background-color: var(--card);
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
 h1 {
-    text-align: center;
+  text-align: center;
+  color: var(--primary);
 }
 
 form {
-    display: flex;
-    flex-direction: column;
+  display: flex;
+  flex-direction: column;
 }
 
 label {
-    margin: 8px 0 4px;
+  margin: 8px 0 4px;
+  font-weight: bold;
 }
 
 input, textarea, select {
-    margin-bottom: 12px;
-    padding: 8px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    font-size: 16px;
+  margin-bottom: 12px;
+  padding: 8px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  font-size: 16px;
+  background-color: var(--card);
+  color: var(--text);
+  transition: background 0.3s, color 0.3s;
+}
+
+select option {
+  background-color: var(--card);
+  color: var(--text);
 }
 
 button {
-    padding: 10px;
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 16px;
-    transition: background 0.3s;
+  padding: 10px;
+  background-color: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background 0.3s;
 }
 
 button:hover {
-    background-color: #45a049;
+  background-color: var(--primary-hover);
 }
 
-/* Novos estilos adicionados */
+/* Navbar */
 .navbar {
-    background-color: #333;
-    padding: 10px;
-    text-align: center;
+  background-color: var(--navbar-bg);
+  padding: 10px;
+  text-align: center;
 }
 
 .navbar a {
-    color: white;
-    text-decoration: none;
-    padding: 10px 20px;
-    display: inline-block;
+  color: var(--navbar-link);
+  text-decoration: none;
+  padding: 10px 20px;
+  display: inline-block;
 }
 
 .navbar a:hover {
-    background-color: #555;
+  background-color: var(--navbar-hover);
 }
 
+/* Card reutilizável */
 .card {
-    background: white;
-    padding: 15px;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    margin-bottom: 20px;
+  background: var(--card);
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
 }
