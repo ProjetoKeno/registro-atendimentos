@@ -65,6 +65,23 @@
 
     .theme-toggle:hover { background-color: var(--blue-hover); }
 
+    .btn-voltar {
+      position: fixed;
+      top: 15px;
+      left: 15px;
+      padding: 8px 14px;
+      background: var(--blue);
+      color: white;
+      border-radius: 6px;
+      text-decoration: none;
+      z-index: 998;
+      font-weight: bold;
+    }
+
+    .btn-voltar:hover {
+      background-color: var(--blue-hover);
+    }
+
     .filtros, .nav-relatorios {
       text-align: center;
       margin-bottom: 20px;
@@ -102,24 +119,20 @@
     thead { background: var(--thead-bg); color: white; }
     tbody tr:hover { background-color: var(--hover-color); }
 
-    .btn-voltar {
-      display: inline-block;
-      margin: 30px auto;
-      padding: 10px 18px;
-      background: var(--blue);
-      color: white;
-      border-radius: 6px;
-      text-decoration: none;
-      text-align: center;
-    }
-
     .relatorio-section { display: none; }
     .relatorio-section.ativo { display: block; }
   </style>
 </head>
 <body>
+  <!-- Botão Voltar ao Topo -->
+  <a href="/homepage" class="btn-voltar">⬅ Voltar</a>
+
+  <!-- Botão de alternar tema -->
   <button class="theme-toggle" onclick="toggleTheme()">🌙</button>
+
   <h2>Relatórios de Atendimentos</h2>
+
+  <!-- Filtros -->
   <div class="filtros">
     <label for="filtroMes">Mês:</label>
     <input type="month" id="filtroMes" />
@@ -141,6 +154,7 @@
     <button onclick="carregarRelatorio()">🔍 Buscar</button>
   </div>
 
+  <!-- Navegação entre relatórios -->
   <div class="nav-relatorios">
     <button onclick="mostrarSecao('processos')">🔁 Por Processo</button>
     <button onclick="mostrarSecao('sistemas')">💻 Por Sistema</button>
@@ -148,6 +162,7 @@
     <button onclick="mostrarSecao('comparativo')">📊 Comparativo</button>
   </div>
 
+  <!-- Seções -->
   <div id="secao-processos" class="relatorio-section ativo">
     <div class="chart-container"><canvas id="graficoProcessos"></canvas></div>
     <div class="table-container">
@@ -175,8 +190,6 @@
     <div class="chart-container"><canvas id="graficoComparativoProcessos"></canvas></div>
     <div class="chart-container"><canvas id="graficoComparativoSistemas"></canvas></div>
   </div>
-
-  <a href="/homepage" class="btn-voltar">⬅ Voltar</a>
 <script>
   let graficoProcessos, graficoSistemas, graficoComparativoProcessos, graficoComparativoSistemas;
 

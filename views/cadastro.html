@@ -46,25 +46,24 @@
     }
 
     .theme-toggle {
-  position: fixed;
-  top: 15px;
-  right: 15px;
-  background-color: var(--link-bg);
-  color: white;
-  border: none;
-  padding: 6px 10px;
-  border-radius: 50px;
-  font-size: 0.9rem;
-  cursor: pointer;
-  z-index: 999;
-  white-space: nowrap;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-  transition: background-color 0.3s ease;
-  display: inline-block;
-  width: auto;
-  max-width: 150px;
-}
-
+      position: fixed;
+      top: 15px;
+      right: 15px;
+      background-color: var(--link-bg);
+      color: white;
+      border: none;
+      padding: 6px 10px;
+      border-radius: 50px;
+      font-size: 0.9rem;
+      cursor: pointer;
+      z-index: 999;
+      white-space: nowrap;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+      transition: background-color 0.3s ease;
+      display: inline-block;
+      width: auto;
+      max-width: 150px;
+    }
 
     .theme-toggle:hover {
       background-color: var(--link-hover);
@@ -201,7 +200,12 @@
     function setTheme(theme) {
       document.documentElement.setAttribute('data-theme', theme);
       localStorage.setItem('temaPreferido', theme);
-      document.querySelector('.theme-toggle').textContent = theme === 'dark' ? '🌞' : '🌙';
+      const btn = document.querySelector('.theme-toggle');
+      if (theme === 'dark') {
+        btn.textContent = '🌞 Tema Claro';
+      } else {
+        btn.textContent = '🌙 Tema Escuro';
+      }
     }
 
     function toggleTheme() {

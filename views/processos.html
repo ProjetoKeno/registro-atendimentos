@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="claro">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cadastro de Processos</title>
+  <link rel="stylesheet" href="/css/styles.css" />
+  <link rel="icon" type="image/x-icon" href="/img/favicon.ico" />
+  <style>
+    :root {
+      --bg-color: #f8f9fa;
+      --text-color: #343a40;
+      --card-bg: #fff;
+      --header-color: #2C3E50;
+      --border-color: #ccc;
+      --hover-color: #f1f1f1;
+      --thead-bg: linear-gradient(90deg, #4CAF50, #45a049);
+      --primary: #4CAF50;
+      --primary-hover: #45a049;
+      --blue: #007bff;
+      --blue-hover: #0056b3;
+    }
+
+    [data-theme="dark"] {
+      --bg-color: #1e1e1e;
+      --text-color: #e0e0e0;
+      --card-bg: #2c2c2c;
+      --header-color: #f5f5f5;
+      --border-color: #444;
+      --hover-color: #2a2a2a;
+      --thead-bg: linear-gradient(90deg, #2ecc71, #27ae60);
+      --primary: #2ecc71;
+      --primary-hover: #27ae60;
+      --blue: #3498db;
+      --blue-hover: #2980b9;
+    }
+
+    body {
+      font-family: 'Arial', sans-serif;
+      margin: 20px;
+      background: var(--bg-color);
+      color: var(--text-color);
+      transition: background 0.3s, color 0.3s;
+    }
+
+    h2 {
+      text-align: center;
+      color: var(--header-color);
+      margin-bottom: 10px;
+    }
+
+    .theme-toggle {
+      position: fixed;
+      top: 15px;
+      right: 15px;
+      background-color: var(--blue);
+      color: white;
+      border: none;
+      padding: 6px 10px;
+      border-radius: 50px;
+      font-size: 0.9rem;
+      cursor: pointer;
+      z-index: 999;
+    }
+
+    .theme-toggle:hover { background-color: var(--blue-hover); }
+
+    .filtros, .nav-relatorios {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .filtros input, .filtros select, .filtros button, .nav-relatorios button {
+      margin: 0 8px;
+      padding: 8px 12px;
+      border-radius: 6px;
+      border: 1px solid var(--border-color);
+      background-color: var(--card-bg);
+      color: var(--text-color);
+      font-weight: bold;
+    }
+
+    button {
+      background-color: var(--primary);
+      color: white;
+      cursor: pointer;
+    }
+
+    button:hover { background-color: var(--primary-hover); }
+
+    .chart-container, .table-container {
+      max-width: 800px;
+      margin: 20px auto;
+      background: var(--card-bg);
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+    }
+
+    table { width: 100%; border-collapse: collapse; }
+    th, td { padding: 12px 15px; border-bottom: 1px solid var(--border-color); text-align: left; }
+    thead { background: var(--thead-bg); color: white; }
+    tbody tr:hover { background-color: var(--hover-color); }
+
+    .btn-voltar {
+      display: inline-block;
+      margin: 30px auto;
+      padding: 10px 18px;
+      background: var(--blue);
+      color: white;
+      border-radius: 6px;
+      text-decoration: none;
+      text-align: center;
+    }
+
+    .relatorio-section { display: none; }
+    .relatorio-section.ativo { display: block; }
+  </style>
+</head>
+<body>
+  <div class="content-wrapper">
+    <header>
+      <h1>Cadastro de Processos</h1>
+      <div class="header-buttons">
+        <button onclick="alternarTema()" class="theme-toggle">
+          <span id="iconeTema">🌙</span>
+        </button>
+        <a href="/homepage.html" class="btn-voltar">🏠 Voltar</a>
+      </div>
+    </header>
+
+    <main>
+      <form id="formProcesso" class="formulario">
+        <input type="hidden" id="processoId" />
+
+        <label for="nome">Nome do Processo:</label>
+        <input type="text" id="nome" required />
+
+        <div class="botoes-form">
+          <button type="submit">💾 Salvar</button>
+          <button type="button" onclick="cancelarEdicao()">❌ Cancelar</button>
+        </div>
+      </form>
+
+      <h2>📋 Lista de Processos</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Nome</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody id="listaProcessos"></tbody>
+      </table>
+    </main>
+  </div>
+
+  <script>
+    function atualizarIconeTema(tema) {
+      const icone = document.getElementById("iconeTema");
+      if (icone) {
+        icone.textContent = tema === "dark" ? "☀️" : "🌙";
+      }
+    }
+
+    function alternarTema() {
+      const html = document.documentElement;
+      const temaAtual = html.getAttribute("data-theme");
+      const novoTema = temaAtual === "dark" ? "claro" : "dark";
+      html.setAttribute("data-theme", novoTema);
+      localStorage.setItem("tema", novoTema);
+      atualizarIconeTema(novoTema);
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      const temaSalvo = localStorage.getItem("tema") || "claro";
+      document.documentElement.setAttribute("data-theme", temaSalvo);
+      atualizarIconeTema(temaSalvo);
+    });
+  </script>
+
+  <script src="/js/processos.js"></script>
+</body>
+</html>

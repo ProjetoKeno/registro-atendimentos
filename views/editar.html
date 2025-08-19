@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Editar Atendimento</title>
+  <link rel="stylesheet" href="/css/styles.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>Editar Atendimento</h1>
+
+    <form id="form-editar">
+      <input type="hidden" id="id" />
+
+      <label for="cliente">Cliente:</label>
+      <input type="text" id="cliente" name="cliente" required />
+
+      <label for="observacao">Observação:</label>
+      <textarea id="observacao" name="observacao" required></textarea>
+
+      <label for="processo">Processo:</label>
+      <select id="processo" name="processo_id" required></select>
+
+      <label for="data_solicitacao">Data de Solicitação:</label>
+      <input type="date" id="data_solicitacao" name="data_solicitacao" required />
+
+      <label for="data_instalacao">Data de Instalação:</label>
+      <input type="date" id="data_instalacao" name="data_instalacao" />
+
+      <label for="sistema">Sistema:</label>
+      <input type="text" id="sistema" name="sistema" />
+
+      <label for="ticket">Ticket:</label>
+      <input type="text" id="ticket" name="ticket" />
+
+      <label for="agente">Agente:</label>
+      <select id="agente" name="agente_id" required></select>
+
+      <label for="backup_cloud">Backup Cloud:</label>
+      <select id="backup_cloud" name="backup_cloud" required>
+        <option value="">Selecione</option>
+        <option value="Sim">Sim</option>
+        <option value="Não">Não</option>
+      </select>
+
+      <button type="submit">Salvar Alterações</button>
+      <a href="/views/listagem.html" class="btn-voltar">Cancelar</a>
+    </form>
+  </div>
+
+  <script>
+    const atendimentoId = new URLSearchParams(window.location.search).get('id');
+    const form = document.getElementById('form-editar');
+    const processoSelect = document.getElementById('processo');
+    const agenteSelect = document.getElementById('agente');
+
+    // Carregar processos
+    fetch('/api/processos')
+      .then(res => res.json())
+      .then(processos => {
+        processos.forEach(proc => {
+          const option = document.createElement('option');
+          option.value = proc.id;
+          option.textContent = proc.nome;
+          processoSelect.appendChild(option);
+        });
+      });
+
+    // Carregar agentes
+    fetch('/api/agentes')
+      .then(res => res.json())
+      .then(agentes => {
+        agentes.forEach(agente => {
+          const option = document.createElement('option');
+          option.value = agente.id;
+          option.textContent = agente.nome;
+          agenteSelect.appendChild(option);
+        });
+      });
+
+    // Carregar dados do atendimento
+    fetch(`/api/atendimentos/${atendimentoId}`)
+      .then(res => res.json())
+      .then(data => {
+        document.getElementById('id').value = data.id;
+        document.getElementById('cliente').value = data.cliente;
+        document.getElementById('observacao').value = data.observacao;
+        document.getElementById('data_solicitacao').value = data.data_solicitacao?.split('T')[0];
+        document.getElementById('data_instalacao').value = data.data_instalacao?.split('T')[0] || '';
+        document.getElementById('sistema').value = data.sistema || '';
+        document.getElementById('ticket').value = data.ticket || '';
+        document.getElementById('backup_cloud').value = data.backup_cloud || '';
+
+        // Aguarda carregamento de opções antes de definir o valor selecionado
+        const esperaSelects = setInterval(() => {
+          if (processoSelect.options.length > 0 && agenteSelect.options.length > 0) {
+            processoSelect.value = data.processo_id;
+            agenteSelect.value = data.agente_id;
+            clearInterval(esperaSelects);
+          }
+        }, 100);
+      });
+
+    // Atualizar atendimento
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const payload = {
+        cliente: form.cliente.value,
+        observacao: form.observacao.value,
+        processo_id: form.processo.value,
+        data_solicitacao: form.data_solicitacao.value,
+        data_instalacao: form.data_instalacao.value || null,
+        sistema: form.sistema.value,
+        ticket: form.ticket.value,
+        agente_id: form.agente.value,
+        backup_cloud: form.backup_cloud.value
+      };
+
+      const response = await fetch(`/api/atendimentos/${atendimentoId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      if (response.ok) {
+        alert('✅ Atendimento atualizado com sucesso!');
+        window.location.href = '/views/listagem.html';
+      } else {
+        const erro = await response.json();
+        alert('❌ Erro ao atualizar: ' + erro.error);
+      }
+    });
+  </script>
+</body>
+</html>

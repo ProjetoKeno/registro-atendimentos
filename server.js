@@ -14,13 +14,13 @@ const db = mysql.createPool({
     user: process.env.DB_USER || 'root',
     password: process.env.DB_PASSWORD || '061127',
     database: process.env.DB_DATABASE || 'registro_atendimentos',
-    port: process.env.DB_PORT || 20309, // ✅ Porta corrigida para o MySQL
+    port: process.env.DB_PORT || 20309,
     waitForConnections: true,
     connectionLimit: 10,
     queueLimit: 0
 });
 
-// Teste de conexão ao banco
+// Teste de conexão
 db.getConnection((err, connection) => {
     if (err) {
         console.error('❌ Erro ao conectar ao MySQL:', err.message);
@@ -30,7 +30,7 @@ db.getConnection((err, connection) => {
     connection.release();
 });
 
-// Definição da porta do servidor
+// Porta do servidor
 const PORT = process.env.PORT || 3307;
 
 // Middleware para JSON
@@ -43,54 +43,53 @@ app.use('/js', express.static(path.join(__dirname, 'js')));
 app.use('/img', express.static(path.join(__dirname, 'img')));
 app.use('/views', express.static(path.join(__dirname, 'views')));
 
-// Importar rotas
+// Importação das rotas
 const agentesRoutes = require('./routes/agentes');
-console.log('✅ Rotas de agentes carregadas');
-
 const atendimentosRoutes = require('./routes/atendimentos');
-console.log('✅ Rotas de atendimentos carregadas');
-
 const processosRoutes = require('./routes/processos');
-console.log('✅ Rotas de processos carregadas');
-
 const relatoriosRoutes = require('./routes/relatorios');
-console.log('✅ Rotas de relatórios carregadas');
 
 app.use('/api/agentes', agentesRoutes);
 app.use('/api/atendimentos', atendimentosRoutes);
 app.use('/api/processos', processosRoutes);
 app.use('/api/relatorios', relatoriosRoutes);
 
-// ✅ Rota para a página inicial
+// Rota raiz redireciona para homepage
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'views', 'listagem.html'));
+    res.sendFile(path.join(__dirname, 'views', 'homepage.html'));
 });
 
-// ✅ Rota para a homepage
+// Rotas manuais para páginas principais
 app.get('/homepage', (req, res) => {
     res.sendFile(path.join(__dirname, 'views', 'homepage.html'));
 });
 
-// ✅ Rota para verificar status do servidor
+app.get('/homepage.html', (req, res) => {
+    res.sendFile(path.join(__dirname, 'views', 'homepage.html'));
+});
+
+app.get('/listagem.html', (req, res) => {
+    res.sendFile(path.join(__dirname, 'views', 'listagem.html'));
+});
+
+// Status do servidor
 app.get('/api/status', (req, res) => {
     res.status(200).json({ status: 'ok' });
 });
 
-// ✅ Rota para listar usuários
+// Listagem de usuários
 app.get('/api/usuarios', (req, res) => {
     const sql = 'SELECT id, nome, email, role FROM usuarios';
-
     db.query(sql, (err, results) => {
         if (err) {
             console.error('❌ Erro ao buscar usuários:', err.message);
             return res.status(500).json({ error: 'Erro ao buscar usuários.', details: err.message });
         }
-
         res.status(200).json(results);
     });
 });
 
-// ✅ Rota para cadastrar usuários com senha criptografada
+// Cadastro de usuários
 app.post('/api/usuarios', async (req, res) => {
     const { nome, email, senha, role = 'user' } = req.body;
 
@@ -101,7 +100,6 @@ app.post('/api/usuarios', async (req, res) => {
     try {
         const hashedPassword = await bcrypt.hash(senha, 10);
         const sql = 'INSERT INTO usuarios (nome, email, senha, role) VALUES (?, ?, ?, ?)';
-
         db.query(sql, [nome, email, hashedPassword, role], (err, result) => {
             if (err) {
                 console.error('❌ Erro ao cadastrar usuário:', err.message);
@@ -109,14 +107,13 @@ app.post('/api/usuarios', async (req, res) => {
             }
             res.status(201).json({ message: '✅ Usuário cadastrado com sucesso!', id: result.insertId });
         });
-
     } catch (error) {
         console.error('❌ Erro ao criptografar a senha:', error.message);
         res.status(500).json({ error: 'Erro ao processar cadastro.' });
     }
 });
 
-// ✅ Rota de login
+// Login
 app.post('/api/login', (req, res) => {
     const { email, senha } = req.body;
 
@@ -136,7 +133,6 @@ app.post('/api/login', (req, res) => {
         }
 
         const usuario = results[0];
-
         bcrypt.compare(senha, usuario.senha, (err, match) => {
             if (err) {
                 console.error('❌ Erro ao verificar senha:', err.message);
@@ -156,7 +152,7 @@ app.post('/api/login', (req, res) => {
     });
 });
 
-// Melhor função para listar rotas
+// Função para listar rotas no console
 function listarRotas(app) {
     app._router.stack.forEach((middleware) => {
         if (middleware.route) {
@@ -173,10 +169,9 @@ function listarRotas(app) {
 
 listarRotas(app);
 
-// Iniciar o servidor Express
+// Iniciar servidor
 app.listen(PORT, '0.0.0.0', () => {
     console.log(`🚀 Servidor disponível em:`);
     console.log(`🔗 Localhost:   http://localhost:${PORT}`);
     console.log(`🔗 Nome da máquina: http://SUPTOPGER-022:${PORT}`);
 });
-

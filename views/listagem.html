@@ -15,6 +15,8 @@
       --border: #ddd;
       --danger: #e74c3c;
       --danger-hover: #c0392b;
+      --edit: #3498db;
+      --edit-hover: #2980b9;
     }
 
     [data-theme="dark"] {
@@ -134,17 +136,29 @@
       background-color: #f1f1f1;
     }
 
-    .btn-delete {
-      background: var(--danger);
-      color: white;
+    .btn-delete, .btn-edit {
       padding: 6px 10px;
       border: none;
       border-radius: 5px;
       cursor: pointer;
+      color: white;
+    }
+
+    .btn-delete {
+      background: var(--danger);
     }
 
     .btn-delete:hover {
       background: var(--danger-hover);
+    }
+
+    .btn-edit {
+      background: var(--edit);
+      margin-right: 5px;
+    }
+
+    .btn-edit:hover {
+      background: var(--edit-hover);
     }
 
     .btn-voltar {
@@ -162,13 +176,11 @@
       background: var(--primary-hover);
     }
   </style>
-<!-- ... início do <head> permanece igual ... -->
-  </style>
 </head>
 <body>
   <button class="theme-toggle" onclick="toggleTheme()">🌙</button>
 
-  <a href="/homepage" class="btn-voltar" style="margin: 15px 0 20px 0;">⬅ Voltar para Homepage</a>
+  <a href="/homepage" class="btn-voltar" style="margin: 15px 0 20px 0;">🏠 Voltar</a>
 
   <h2>Consulta de Atendimentos</h2>
 
@@ -245,7 +257,10 @@
               <td>${at.agente || 'N/A'}</td>
               <td>${at.processo || 'N/A'}</td>
               <td>${at.ticket ? `<a href="${at.ticket}" target="_blank">Abrir</a>` : 'N/A'}</td>
-              <td><button class="btn-delete" onclick="excluirAtendimento(${at.id})">Excluir</button></td>
+              <td>
+                <button class="btn-edit" onclick="editarAtendimento(${at.id})">Editar</button>
+                <button class="btn-delete" onclick="excluirAtendimento(${at.id})">Excluir</button>
+              </td>
             </tr>
           `).join('')
           : '<tr><td colspan="6" style="text-align:center;">Nenhum atendimento encontrado</td></tr>';
@@ -257,6 +272,10 @@
         console.error(error);
         alert('Erro ao carregar atendimentos.');
       }
+    }
+
+    function editarAtendimento(id) {
+      window.location.href = `/views/editar.html?id=${id}`;
     }
 
     async function excluirAtendimento(id) {
@@ -317,4 +336,3 @@
   </script>
 </body>
 </html>
-
